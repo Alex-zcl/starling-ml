@@ -1,0 +1,147 @@
+DataSpec:
+  creates:
+    - data.num_classes
+    - data.in_channels
+
+Run:
+  creates:
+    - run.step
+    - run.phase
+    - run.validation_index
+    - run.validation_due
+    - run.stop
+
+TrainData:
+  creates:
+    - train.batch.image
+    - train.batch.mask
+
+ValidationData:
+  creates:
+    - validation.batch.image
+    - validation.batch.mask
+
+Model:
+  reads:
+    - data.in_channels
+    - data.num_classes
+  creates:
+    - model.instance
+
+TrainForward:
+  reads:
+    - model.instance
+    - train.batch.image
+  creates:
+    - train.model.logits
+
+ValidationForward:
+  reads:
+    - model.instance
+    - validation.batch.image
+  creates:
+    - validation.model.logits
+
+AdaptiveWeights:
+  reads:
+    - data.num_classes
+    - metrics.validation.precision
+    - metrics.validation.recall
+  creates:
+    - weights.positive
+    - weights.negative
+    - weights.class
+
+DiceWeight:
+  reads:
+    - run.step
+  creates:
+    - weights.loss.dice
+
+BCE:
+  reads:
+    - train.model.logits
+    - train.batch.mask
+    - weights.positive
+    - weights.negative
+  creates:
+    - loss.bce
+
+Dice:
+  reads:
+    - train.model.logits
+    - train.batch.mask
+    - weights.class
+  creates:
+    - loss.dice
+
+Loss:
+  reads:
+    - loss.bce
+    - loss.dice
+    - weights.loss.dice
+  creates:
+    - train.loss
+
+Optimization:
+  reads:
+    - model.instance
+    - train.loss
+  creates:
+    - optim.main.optimizer
+    - optim.main.did_step
+    - optim.main.step
+    - optim.main.micro_step
+    - optim.main.grad_norm
+    - optim.main.skipped
+
+TrainMetrics:
+  reads:
+    - data.num_classes
+    - train.model.logits
+    - train.batch.mask
+  creates:
+    - metrics.train.precision
+    - metrics.train.precision_mean
+    - metrics.train.recall
+    - metrics.train.recall_mean
+    - metrics.train.f1
+    - metrics.train.f1_mean
+    - metrics.train.dice
+    - metrics.train.dice_mean
+    - metrics.train.iou
+    - metrics.train.iou_mean
+    - metrics.train.accuracy
+    - metrics.train.accuracy_mean
+
+ValidationMetrics:
+  reads:
+    - data.num_classes
+    - validation.model.logits
+    - validation.batch.mask
+  creates:
+    - metrics.validation.precision
+    - metrics.validation.precision_mean
+    - metrics.validation.recall
+    - metrics.validation.recall_mean
+    - metrics.validation.f1
+    - metrics.validation.f1_mean
+    - metrics.validation.dice
+    - metrics.validation.dice_mean
+    - metrics.validation.iou
+    - metrics.validation.iou_mean
+    - metrics.validation.accuracy
+    - metrics.validation.accuracy_mean
+
+Logger:
+  reads:
+    - run.step
+    - train.loss
+    - metrics.train.dice_mean
+    - metrics.validation.dice_mean
+
+Progress:
+  reads:
+    - run.step
+    - train.loss
+    - metrics.validation.dice_mean

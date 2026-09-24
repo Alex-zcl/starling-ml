@@ -1,0 +1,214 @@
+constants:
+  max_steps: 3
+  seed: 42
+  device: cpu
+modules:
+  seed:
+    params:
+      seed: $const:seed
+    class: starling_ml.modules.processing.runtime.Seed
+  dataset:
+    params:
+      factory: starling_ml.modules.data.general.SyntheticDataset
+      output: data.dataset
+      kwargs:
+        task: segmentation3d
+        spatial:
+        - 4
+        - 4
+        - 4
+        seed: 42
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+  batch:
+    params:
+      dataset: $ctx:data.dataset
+      outputs:
+        batch.input: input
+        batch.target: target
+      batch_size: 4
+      seed: 42
+    class: starling_ml.modules.data.general.BatchSource
+  model:
+    params:
+      factory: starling_ml.modules.models.architectures.Segmenter
+      output: model.raw
+      kwargs:
+        classes: 3
+        spatial_dims: 3
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+  device:
+    params:
+      model: $ctx:model.raw
+      device: $const:device
+      output: model.instance
+    class: starling_ml.modules.processing.runtime.PrepareModel
+  move_input:
+    params:
+      input: batch.input
+      device: $const:device
+    class: starling_ml.modules.processing.runtime.MoveToDevice
+  move_target:
+    params:
+      input: batch.target
+      device: $const:device
+    class: starling_ml.modules.processing.runtime.MoveToDevice
+  forward:
+    params:
+      model: $ctx:model.instance
+      input: batch.input
+      output: model.output
+    class: starling_ml.modules.forward.Forward
+  loss:
+    params:
+      prediction: model.output
+      target: batch.target
+      output: loss.pointwise
+    class: starling_ml.modules.losses.basic.CrossEntropy
+  dice:
+    params:
+      prediction: model.output
+      target: batch.target
+      output: loss.dice
+      mode: multiclass
+      empty_target: false_positive
+    class: starling_ml.modules.losses.overlap.DiceLoss
+  mix:
+    params:
+      terms:
+      - loss: loss.pointwise
+      - loss: loss.dice
+    class: starling_ml.modules.losses.combine.LossMixer
+  optimizer:
+    params:
+      model: $ctx:model.instance
+      lr: 0.001
+    class: starling_ml.modules.optimization.OptimizationManager
+  run:
+    params:
+      max_steps: $const:max_steps
+      validate_at_end: false
+    class: starling_ml.modules.control.run.RunManager
+contracts:
+  seed:
+    creates: []
+    reads: []
+    mutates: []
+    updates: []
+  dataset:
+    creates:
+    - data.dataset
+    reads: []
+    mutates: []
+    updates: []
+  batch:
+    creates:
+    - batch.input
+    - batch.target
+    reads:
+    - data.dataset
+    mutates: []
+    updates: []
+  model:
+    creates:
+    - model.raw
+    reads: []
+    mutates: []
+    updates: []
+  device:
+    creates:
+    - model.instance
+    reads:
+    - model.raw
+    mutates:
+    - model.raw
+    updates: []
+  move_input:
+    creates: []
+    reads:
+    - batch.input
+    mutates: []
+    updates:
+    - batch.input
+  move_target:
+    creates: []
+    reads:
+    - batch.target
+    mutates: []
+    updates:
+    - batch.target
+  forward:
+    creates:
+    - model.output
+    reads:
+    - model.instance
+    - batch.input
+    mutates:
+    - model.instance
+    updates: []
+  loss:
+    creates:
+    - loss.pointwise
+    reads:
+    - model.output
+    - batch.target
+    mutates: []
+    updates: []
+  dice:
+    creates:
+    - loss.dice
+    reads:
+    - model.output
+    - batch.target
+    mutates: []
+    updates: []
+  mix:
+    creates:
+    - train.loss
+    reads:
+    - loss.pointwise
+    - loss.dice
+    mutates: []
+    updates: []
+  optimizer:
+    creates:
+    - optim.main.optimizer
+    - optim.main.did_step
+    - optim.main.step
+    - optim.main.micro_step
+    - optim.main.grad_norm
+    - optim.main.skipped
+    reads:
+    - model.instance
+    - train.loss
+    mutates:
+    - model.instance
+    updates: []
+  run:
+    creates:
+    - run.step
+    - run.phase
+    - run.validation_index
+    - run.validation_due
+    - run.stop
+    reads: []
+    mutates: []
+    updates: []
+pipeline:
+- signal: run_started
+- while:
+    condition: $ctx:run.stop
+    equals: false
+    max_iterations: 100000
+    body:
+    - call: batch
+    - call: move_input
+    - call: move_target
+    - call: forward
+    - call: loss
+    - call: dice
+    - call: mix
+    - call: optimizer
+    - when:
+        condition: $ctx:optim.main.did_step
+        body:
+        - signal: step_completed

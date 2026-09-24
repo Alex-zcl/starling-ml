@@ -1,0 +1,41 @@
+[W924 09:23:31.379691887 ProcessGroupGloo.cpp:527] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W924 09:23:31.384054362 ProcessGroupGloo.cpp:527] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+W0924 09:23:32.338000 4 torch/multiprocessing/spawn.py:165] Terminating process 6 via signal SIGTERM
+Traceback (most recent call last):
+  File "/workspace/scratch/9cdf632e0b5c/starling_ml_v0.3.0/examples/check_ddp.py", line 43, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/starling_ml_v0.3.0/examples/check_ddp.py", line 32, in main
+    mp.spawn(worker,args=(str(Path(d)/'rendezvous'),output),nprocs=2,join=True)
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/multiprocessing/spawn.py", line 340, in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/multiprocessing/spawn.py", line 296, in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/multiprocessing/spawn.py", line 211, in join
+    raise ProcessRaisedException(msg, error_index, failed_process.pid)
+torch.multiprocessing.spawn.ProcessRaisedException:
+
+-- Process 1 terminated with the following error:
+Traceback (most recent call last):
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/multiprocessing/spawn.py", line 87, in _wrap
+    fn(i, *args)
+  File "/workspace/scratch/9cdf632e0b5c/starling_ml_v0.3.0/examples/check_ddp.py", line 13, in worker
+    dist.init_process_group('gloo', init_method='file://' + rendezvous, rank=rank, world_size=2, timeout=timedelta(seconds=20))
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/distributed/c10d_logger.py", line 97, in wrapper
+    func_return = func(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/distributed/distributed_c10d.py", line 2553, in init_process_group
+    default_pg, _ = _new_process_group_helper(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/distributed/distributed_c10d.py", line 2874, in _new_process_group_helper
+    backend_result = creator_fn(dist_backend_opts, backend_options)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/9cdf632e0b5c/deps/torch/distributed/distributed_c10d.py", line 669, in _create_gloo_process_group
+    backend_class = ProcessGroupGloo(
+                    ^^^^^^^^^^^^^^^^^
+RuntimeError: [enforce fail at /__w/pytorch/pytorch/third_party/gloo/gloo/transport/tcp/device.cc:189] rv != -1. -1 vs -1. Operation not permitted

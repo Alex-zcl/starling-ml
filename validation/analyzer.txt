@@ -1,0 +1,8 @@
+Анализ конфигурации: ошибок 0, предупреждений 2.
+[ПРЕДУПРЕЖДЕНИЕ PRESENCE_NORMALIZATION] dice: present/empty нормируются в reducer; в однородной группе общий factor сокращается.
+[ПРЕДУПРЕЖДЕНИЕ MISSING_CLASS] case_weights: Политика missing не создаёт положительные обучающие данные для отсутствующего класса.
+[ПРОВЕРИТЬ RUNTIME] batch: Shapes, dtype, masks и scalar losses проверяются на первом вызове; можно передать batch=engine.context.data.
+Objective: loss: MulticlassFocalLoss; reducer=element_mean; element denominator=сумма importance; costs только в числителе.
+Objective: dice: DiceLoss; reducer=pair_mean; TP/FP/FN внутри ratio, внешние веса нормируются.
+Objective: loss: label_cost ← pixel_cost (DatasetWeights; level=element; balance=class; unit=element; gamma=0.5)
+Objective: dice: class_weight = [1.0, 1.0, 2.0]; present_weight ← case_weights (DatasetWeights; level=case; balance=binary; unit=study; gamma=0.5); empty_weight ← case_weights (DatasetWeights; level=case; balance=binary; unit=study; gamma=0.5); empty_cost = 0.2

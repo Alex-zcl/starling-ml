@@ -1,0 +1,416 @@
+running bdist_wheel
+running build
+running build_py
+copying starling_ml/analysis.py -> build/lib/starling_ml
+copying starling_ml/distributed.py -> build/lib/starling_ml
+copying starling_ml/__main__.py -> build/lib/starling_ml
+copying starling_ml/__init__.py -> build/lib/starling_ml
+copying starling_ml/configs.py -> build/lib/starling_ml
+copying starling_ml/checkpoint.py -> build/lib/starling_ml
+copying starling_ml/recipes.py -> build/lib/starling_ml
+copying starling_ml/launcher.py -> build/lib/starling_ml
+copying starling_ml/modules/tasks.py -> build/lib/starling_ml/modules
+copying starling_ml/modules/__init__.py -> build/lib/starling_ml/modules
+copying starling_ml/modules/forward.py -> build/lib/starling_ml/modules
+copying starling_ml/modules/optimization.py -> build/lib/starling_ml/modules
+copying starling_ml/modules/detection.py -> build/lib/starling_ml/modules
+copying starling_ml/ops/objectives.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/tasks.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/metrics.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/__init__.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/surfaces.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/losses.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/pointwise.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/reduction.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/statistics.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/weights.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/detection.py -> build/lib/starling_ml/ops
+copying starling_ml/ops/tensors.py -> build/lib/starling_ml/ops
+copying starling_ml/core/__init__.py -> build/lib/starling_ml/core
+copying starling_ml/core/context.py -> build/lib/starling_ml/core
+copying starling_ml/core/module.py -> build/lib/starling_ml/core
+copying starling_ml/core/config.py -> build/lib/starling_ml/core
+copying starling_ml/core/engine.py -> build/lib/starling_ml/core
+copying starling_ml/integrations/transformers.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/clearml.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/nnunet.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/__init__.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/diffusers.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/smp.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/monai.py -> build/lib/starling_ml/integrations
+copying starling_ml/integrations/tensorboard.py -> build/lib/starling_ml/integrations
+copying starling_ml/modules/processing/runtime.py -> build/lib/starling_ml/modules/processing
+copying starling_ml/modules/processing/__init__.py -> build/lib/starling_ml/modules/processing
+copying starling_ml/modules/processing/tensors.py -> build/lib/starling_ml/modules/processing
+copying starling_ml/modules/data/__init__.py -> build/lib/starling_ml/modules/data
+copying starling_ml/modules/data/loader.py -> build/lib/starling_ml/modules/data
+copying starling_ml/modules/data/statistics.py -> build/lib/starling_ml/modules/data
+copying starling_ml/modules/data/general.py -> build/lib/starling_ml/modules/data
+copying starling_ml/modules/data/synthetic.py -> build/lib/starling_ml/modules/data
+copying starling_ml/modules/models/architectures.py -> build/lib/starling_ml/modules/models
+copying starling_ml/modules/models/__init__.py -> build/lib/starling_ml/modules/models
+copying starling_ml/modules/models/basic.py -> build/lib/starling_ml/modules/models
+copying starling_ml/modules/losses/__init__.py -> build/lib/starling_ml/modules/losses
+copying starling_ml/modules/losses/overlap.py -> build/lib/starling_ml/modules/losses
+copying starling_ml/modules/losses/basic.py -> build/lib/starling_ml/modules/losses
+copying starling_ml/modules/losses/combine.py -> build/lib/starling_ml/modules/losses
+copying starling_ml/modules/monitoring/__init__.py -> build/lib/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/progress.py -> build/lib/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/gradients.py -> build/lib/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/checkpoint.py -> build/lib/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/basic.py -> build/lib/starling_ml/modules/monitoring
+copying starling_ml/modules/geometry/__init__.py -> build/lib/starling_ml/modules/geometry
+copying starling_ml/modules/geometry/surfaces.py -> build/lib/starling_ml/modules/geometry
+copying starling_ml/modules/metrics/__init__.py -> build/lib/starling_ml/modules/metrics
+copying starling_ml/modules/metrics/segmentation.py -> build/lib/starling_ml/modules/metrics
+copying starling_ml/modules/metrics/detection.py -> build/lib/starling_ml/modules/metrics
+copying starling_ml/modules/control/training.py -> build/lib/starling_ml/modules/control
+copying starling_ml/modules/control/__init__.py -> build/lib/starling_ml/modules/control
+copying starling_ml/modules/control/weights.py -> build/lib/starling_ml/modules/control
+copying starling_ml/modules/control/run.py -> build/lib/starling_ml/modules/control
+running egg_info
+writing starling_ml.egg-info/PKG-INFO
+writing dependency_links to starling_ml.egg-info/dependency_links.txt
+writing entry points to starling_ml.egg-info/entry_points.txt
+writing requirements to starling_ml.egg-info/requires.txt
+writing top-level names to starling_ml.egg-info/top_level.txt
+reading manifest file 'starling_ml.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+writing manifest file 'starling_ml.egg-info/SOURCES.txt'
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/starling_ml
+copying build/lib/starling_ml/analysis.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+copying build/lib/starling_ml/distributed.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules
+copying build/lib/starling_ml/modules/tasks.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/processing
+copying build/lib/starling_ml/modules/processing/runtime.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/processing
+copying build/lib/starling_ml/modules/processing/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/processing
+copying build/lib/starling_ml/modules/processing/tensors.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/processing
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/data
+copying build/lib/starling_ml/modules/data/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/data
+copying build/lib/starling_ml/modules/data/loader.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/data
+copying build/lib/starling_ml/modules/data/statistics.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/data
+copying build/lib/starling_ml/modules/data/general.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/data
+copying build/lib/starling_ml/modules/data/synthetic.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/data
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/models
+copying build/lib/starling_ml/modules/models/architectures.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/models
+copying build/lib/starling_ml/modules/models/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/models
+copying build/lib/starling_ml/modules/models/basic.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/models
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/losses
+copying build/lib/starling_ml/modules/losses/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/losses
+copying build/lib/starling_ml/modules/losses/overlap.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/losses
+copying build/lib/starling_ml/modules/losses/basic.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/losses
+copying build/lib/starling_ml/modules/losses/combine.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/losses
+copying build/lib/starling_ml/modules/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules
+copying build/lib/starling_ml/modules/forward.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/monitoring
+copying build/lib/starling_ml/modules/monitoring/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/monitoring
+copying build/lib/starling_ml/modules/monitoring/progress.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/monitoring
+copying build/lib/starling_ml/modules/monitoring/gradients.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/monitoring
+copying build/lib/starling_ml/modules/monitoring/checkpoint.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/monitoring
+copying build/lib/starling_ml/modules/monitoring/basic.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/monitoring
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/geometry
+copying build/lib/starling_ml/modules/geometry/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/geometry
+copying build/lib/starling_ml/modules/geometry/surfaces.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/geometry
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/metrics
+copying build/lib/starling_ml/modules/metrics/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/metrics
+copying build/lib/starling_ml/modules/metrics/segmentation.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/metrics
+copying build/lib/starling_ml/modules/metrics/detection.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/metrics
+copying build/lib/starling_ml/modules/optimization.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules
+creating build/bdist.linux-x86_64/wheel/starling_ml/modules/control
+copying build/lib/starling_ml/modules/control/training.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/control
+copying build/lib/starling_ml/modules/control/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/control
+copying build/lib/starling_ml/modules/control/weights.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/control
+copying build/lib/starling_ml/modules/control/run.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules/control
+copying build/lib/starling_ml/modules/detection.py -> build/bdist.linux-x86_64/wheel/./starling_ml/modules
+creating build/bdist.linux-x86_64/wheel/starling_ml/ops
+copying build/lib/starling_ml/ops/objectives.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/tasks.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/metrics.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/surfaces.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/losses.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/pointwise.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/reduction.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/statistics.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/weights.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/detection.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/ops/tensors.py -> build/bdist.linux-x86_64/wheel/./starling_ml/ops
+copying build/lib/starling_ml/__main__.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+copying build/lib/starling_ml/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+creating build/bdist.linux-x86_64/wheel/starling_ml/core
+copying build/lib/starling_ml/core/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/core
+copying build/lib/starling_ml/core/context.py -> build/bdist.linux-x86_64/wheel/./starling_ml/core
+copying build/lib/starling_ml/core/module.py -> build/bdist.linux-x86_64/wheel/./starling_ml/core
+copying build/lib/starling_ml/core/config.py -> build/bdist.linux-x86_64/wheel/./starling_ml/core
+copying build/lib/starling_ml/core/engine.py -> build/bdist.linux-x86_64/wheel/./starling_ml/core
+creating build/bdist.linux-x86_64/wheel/starling_ml/integrations
+copying build/lib/starling_ml/integrations/transformers.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/clearml.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/nnunet.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/__init__.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/diffusers.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/smp.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/monai.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/integrations/tensorboard.py -> build/bdist.linux-x86_64/wheel/./starling_ml/integrations
+copying build/lib/starling_ml/configs.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+copying build/lib/starling_ml/checkpoint.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+copying build/lib/starling_ml/recipes.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+copying build/lib/starling_ml/launcher.py -> build/bdist.linux-x86_64/wheel/./starling_ml
+running install_egg_info
+Copying starling_ml.egg-info to build/bdist.linux-x86_64/wheel/./starling_ml-0.3.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/starling_ml-0.3.0.dist-info/WHEEL
+creating '/workspace/scratch/9cdf632e0b5c/starling_ml_v0.3.0/dist/.tmp-1t_95i8k/starling_ml-0.3.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'starling_ml/__init__.py'
+adding 'starling_ml/__main__.py'
+adding 'starling_ml/analysis.py'
+adding 'starling_ml/checkpoint.py'
+adding 'starling_ml/configs.py'
+adding 'starling_ml/distributed.py'
+adding 'starling_ml/launcher.py'
+adding 'starling_ml/recipes.py'
+adding 'starling_ml/core/__init__.py'
+adding 'starling_ml/core/config.py'
+adding 'starling_ml/core/context.py'
+adding 'starling_ml/core/engine.py'
+adding 'starling_ml/core/module.py'
+adding 'starling_ml/integrations/__init__.py'
+adding 'starling_ml/integrations/clearml.py'
+adding 'starling_ml/integrations/diffusers.py'
+adding 'starling_ml/integrations/monai.py'
+adding 'starling_ml/integrations/nnunet.py'
+adding 'starling_ml/integrations/smp.py'
+adding 'starling_ml/integrations/tensorboard.py'
+adding 'starling_ml/integrations/transformers.py'
+adding 'starling_ml/modules/__init__.py'
+adding 'starling_ml/modules/detection.py'
+adding 'starling_ml/modules/forward.py'
+adding 'starling_ml/modules/optimization.py'
+adding 'starling_ml/modules/tasks.py'
+adding 'starling_ml/modules/control/__init__.py'
+adding 'starling_ml/modules/control/run.py'
+adding 'starling_ml/modules/control/training.py'
+adding 'starling_ml/modules/control/weights.py'
+adding 'starling_ml/modules/data/__init__.py'
+adding 'starling_ml/modules/data/general.py'
+adding 'starling_ml/modules/data/loader.py'
+adding 'starling_ml/modules/data/statistics.py'
+adding 'starling_ml/modules/data/synthetic.py'
+adding 'starling_ml/modules/geometry/__init__.py'
+adding 'starling_ml/modules/geometry/surfaces.py'
+adding 'starling_ml/modules/losses/__init__.py'
+adding 'starling_ml/modules/losses/basic.py'
+adding 'starling_ml/modules/losses/combine.py'
+adding 'starling_ml/modules/losses/overlap.py'
+adding 'starling_ml/modules/metrics/__init__.py'
+adding 'starling_ml/modules/metrics/detection.py'
+adding 'starling_ml/modules/metrics/segmentation.py'
+adding 'starling_ml/modules/models/__init__.py'
+adding 'starling_ml/modules/models/architectures.py'
+adding 'starling_ml/modules/models/basic.py'
+adding 'starling_ml/modules/monitoring/__init__.py'
+adding 'starling_ml/modules/monitoring/basic.py'
+adding 'starling_ml/modules/monitoring/checkpoint.py'
+adding 'starling_ml/modules/monitoring/gradients.py'
+adding 'starling_ml/modules/monitoring/progress.py'
+adding 'starling_ml/modules/processing/__init__.py'
+adding 'starling_ml/modules/processing/runtime.py'
+adding 'starling_ml/modules/processing/tensors.py'
+adding 'starling_ml/ops/__init__.py'
+adding 'starling_ml/ops/detection.py'
+adding 'starling_ml/ops/losses.py'
+adding 'starling_ml/ops/metrics.py'
+adding 'starling_ml/ops/objectives.py'
+adding 'starling_ml/ops/pointwise.py'
+adding 'starling_ml/ops/reduction.py'
+adding 'starling_ml/ops/statistics.py'
+adding 'starling_ml/ops/surfaces.py'
+adding 'starling_ml/ops/tasks.py'
+adding 'starling_ml/ops/tensors.py'
+adding 'starling_ml/ops/weights.py'
+adding 'starling_ml-0.3.0.dist-info/licenses/LICENSE'
+adding 'starling_ml-0.3.0.dist-info/METADATA'
+adding 'starling_ml-0.3.0.dist-info/WHEEL'
+adding 'starling_ml-0.3.0.dist-info/entry_points.txt'
+adding 'starling_ml-0.3.0.dist-info/top_level.txt'
+adding 'starling_ml-0.3.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Built: starling_ml-0.3.0-py3-none-any.whl
+running sdist
+running egg_info
+writing starling_ml.egg-info/PKG-INFO
+writing dependency_links to starling_ml.egg-info/dependency_links.txt
+writing entry points to starling_ml.egg-info/entry_points.txt
+writing requirements to starling_ml.egg-info/requires.txt
+writing top-level names to starling_ml.egg-info/top_level.txt
+reading manifest file 'starling_ml.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+writing manifest file 'starling_ml.egg-info/SOURCES.txt'
+running check
+creating starling_ml-0.3.0
+creating starling_ml-0.3.0/configs/segmentation_demo
+creating starling_ml-0.3.0/configs/standard
+creating starling_ml-0.3.0/examples
+creating starling_ml-0.3.0/starling_ml
+creating starling_ml-0.3.0/starling_ml.egg-info
+creating starling_ml-0.3.0/starling_ml/core
+creating starling_ml-0.3.0/starling_ml/integrations
+creating starling_ml-0.3.0/starling_ml/modules
+creating starling_ml-0.3.0/starling_ml/modules/control
+creating starling_ml-0.3.0/starling_ml/modules/data
+creating starling_ml-0.3.0/starling_ml/modules/geometry
+creating starling_ml-0.3.0/starling_ml/modules/losses
+creating starling_ml-0.3.0/starling_ml/modules/metrics
+creating starling_ml-0.3.0/starling_ml/modules/models
+creating starling_ml-0.3.0/starling_ml/modules/monitoring
+creating starling_ml-0.3.0/starling_ml/modules/processing
+creating starling_ml-0.3.0/starling_ml/ops
+creating starling_ml-0.3.0/tests
+creating starling_ml-0.3.0/validation
+copying files to starling_ml-0.3.0...
+copying AUDIT_v0.2.0.md -> starling_ml-0.3.0
+copying CHANGELOG.md -> starling_ml-0.3.0
+copying CONFIG_ANALYZER.md -> starling_ml-0.3.0
+copying CONTRIBUTING.md -> starling_ml-0.3.0
+copying HANDOFF.md -> starling_ml-0.3.0
+copying INTEGRATIONS.md -> starling_ml-0.3.0
+copying LICENSE -> starling_ml-0.3.0
+copying LOSS_WEIGHTING.md -> starling_ml-0.3.0
+copying MANIFEST.in -> starling_ml-0.3.0
+copying MIGRATION.md -> starling_ml-0.3.0
+copying PHILOSOPHY.md -> starling_ml-0.3.0
+copying README.md -> starling_ml-0.3.0
+copying RESUME_NOTES.md -> starling_ml-0.3.0
+copying SECURITY.md -> starling_ml-0.3.0
+copying STEP_LIFECYCLE.md -> starling_ml-0.3.0
+copying VALIDATION_REPORT.md -> starling_ml-0.3.0
+copying WEIGHTING_DESIGN.md -> starling_ml-0.3.0
+copying pyproject.toml -> starling_ml-0.3.0
+copying run_demo.py -> starling_ml-0.3.0
+copying configs/segmentation_demo/constants.yaml -> starling_ml-0.3.0/configs/segmentation_demo
+copying configs/segmentation_demo/contracts.yaml -> starling_ml-0.3.0/configs/segmentation_demo
+copying configs/segmentation_demo/modules.yaml -> starling_ml-0.3.0/configs/segmentation_demo
+copying configs/segmentation_demo/pipeline.yaml -> starling_ml-0.3.0/configs/segmentation_demo
+copying configs/standard/classification.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/contrastive.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/detection.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/diffusion.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/distillation.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/gan.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/instance_segmentation.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/language_model.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/multilabel.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/regression.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/rl_bandit.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/segmentation.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/segmentation3d.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/segmentation_validation.yaml -> starling_ml-0.3.0/configs/standard
+copying configs/standard/weighted_segmentation.yaml -> starling_ml-0.3.0/configs/standard
+copying examples/check_ddp.py -> starling_ml-0.3.0/examples
+copying examples/check_launcher.py -> starling_ml-0.3.0/examples
+copying examples/quickstart.py -> starling_ml-0.3.0/examples
+copying examples/train_distributed.py -> starling_ml-0.3.0/examples
+copying starling_ml/__init__.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/__main__.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/analysis.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/checkpoint.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/configs.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/distributed.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/launcher.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml/recipes.py -> starling_ml-0.3.0/starling_ml
+copying starling_ml.egg-info/PKG-INFO -> starling_ml-0.3.0/starling_ml.egg-info
+copying starling_ml.egg-info/SOURCES.txt -> starling_ml-0.3.0/starling_ml.egg-info
+copying starling_ml.egg-info/dependency_links.txt -> starling_ml-0.3.0/starling_ml.egg-info
+copying starling_ml.egg-info/entry_points.txt -> starling_ml-0.3.0/starling_ml.egg-info
+copying starling_ml.egg-info/requires.txt -> starling_ml-0.3.0/starling_ml.egg-info
+copying starling_ml.egg-info/top_level.txt -> starling_ml-0.3.0/starling_ml.egg-info
+copying starling_ml/core/__init__.py -> starling_ml-0.3.0/starling_ml/core
+copying starling_ml/core/config.py -> starling_ml-0.3.0/starling_ml/core
+copying starling_ml/core/context.py -> starling_ml-0.3.0/starling_ml/core
+copying starling_ml/core/engine.py -> starling_ml-0.3.0/starling_ml/core
+copying starling_ml/core/module.py -> starling_ml-0.3.0/starling_ml/core
+copying starling_ml/integrations/__init__.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/clearml.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/diffusers.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/monai.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/nnunet.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/smp.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/tensorboard.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/integrations/transformers.py -> starling_ml-0.3.0/starling_ml/integrations
+copying starling_ml/modules/__init__.py -> starling_ml-0.3.0/starling_ml/modules
+copying starling_ml/modules/detection.py -> starling_ml-0.3.0/starling_ml/modules
+copying starling_ml/modules/forward.py -> starling_ml-0.3.0/starling_ml/modules
+copying starling_ml/modules/optimization.py -> starling_ml-0.3.0/starling_ml/modules
+copying starling_ml/modules/tasks.py -> starling_ml-0.3.0/starling_ml/modules
+copying starling_ml/modules/control/__init__.py -> starling_ml-0.3.0/starling_ml/modules/control
+copying starling_ml/modules/control/run.py -> starling_ml-0.3.0/starling_ml/modules/control
+copying starling_ml/modules/control/training.py -> starling_ml-0.3.0/starling_ml/modules/control
+copying starling_ml/modules/control/weights.py -> starling_ml-0.3.0/starling_ml/modules/control
+copying starling_ml/modules/data/__init__.py -> starling_ml-0.3.0/starling_ml/modules/data
+copying starling_ml/modules/data/general.py -> starling_ml-0.3.0/starling_ml/modules/data
+copying starling_ml/modules/data/loader.py -> starling_ml-0.3.0/starling_ml/modules/data
+copying starling_ml/modules/data/statistics.py -> starling_ml-0.3.0/starling_ml/modules/data
+copying starling_ml/modules/data/synthetic.py -> starling_ml-0.3.0/starling_ml/modules/data
+copying starling_ml/modules/geometry/__init__.py -> starling_ml-0.3.0/starling_ml/modules/geometry
+copying starling_ml/modules/geometry/surfaces.py -> starling_ml-0.3.0/starling_ml/modules/geometry
+copying starling_ml/modules/losses/__init__.py -> starling_ml-0.3.0/starling_ml/modules/losses
+copying starling_ml/modules/losses/basic.py -> starling_ml-0.3.0/starling_ml/modules/losses
+copying starling_ml/modules/losses/combine.py -> starling_ml-0.3.0/starling_ml/modules/losses
+copying starling_ml/modules/losses/overlap.py -> starling_ml-0.3.0/starling_ml/modules/losses
+copying starling_ml/modules/metrics/__init__.py -> starling_ml-0.3.0/starling_ml/modules/metrics
+copying starling_ml/modules/metrics/detection.py -> starling_ml-0.3.0/starling_ml/modules/metrics
+copying starling_ml/modules/metrics/segmentation.py -> starling_ml-0.3.0/starling_ml/modules/metrics
+copying starling_ml/modules/models/__init__.py -> starling_ml-0.3.0/starling_ml/modules/models
+copying starling_ml/modules/models/architectures.py -> starling_ml-0.3.0/starling_ml/modules/models
+copying starling_ml/modules/models/basic.py -> starling_ml-0.3.0/starling_ml/modules/models
+copying starling_ml/modules/monitoring/__init__.py -> starling_ml-0.3.0/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/basic.py -> starling_ml-0.3.0/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/checkpoint.py -> starling_ml-0.3.0/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/gradients.py -> starling_ml-0.3.0/starling_ml/modules/monitoring
+copying starling_ml/modules/monitoring/progress.py -> starling_ml-0.3.0/starling_ml/modules/monitoring
+copying starling_ml/modules/processing/__init__.py -> starling_ml-0.3.0/starling_ml/modules/processing
+copying starling_ml/modules/processing/runtime.py -> starling_ml-0.3.0/starling_ml/modules/processing
+copying starling_ml/modules/processing/tensors.py -> starling_ml-0.3.0/starling_ml/modules/processing
+copying starling_ml/ops/__init__.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/detection.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/losses.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/metrics.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/objectives.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/pointwise.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/reduction.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/statistics.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/surfaces.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/tasks.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/tensors.py -> starling_ml-0.3.0/starling_ml/ops
+copying starling_ml/ops/weights.py -> starling_ml-0.3.0/starling_ml/ops
+copying tests/__init__.py -> starling_ml-0.3.0/tests
+copying tests/helpers.py -> starling_ml-0.3.0/tests
+copying tests/test_core.py -> starling_ml-0.3.0/tests
+copying tests/test_integrations.py -> starling_ml-0.3.0/tests
+copying tests/test_losses.py -> starling_ml-0.3.0/tests
+copying tests/test_optimization.py -> starling_ml-0.3.0/tests
+copying tests/test_v03_math.py -> starling_ml-0.3.0/tests
+copying tests/test_v03_runtime.py -> starling_ml-0.3.0/tests
+copying validation/analyzer.txt -> starling_ml-0.3.0/validation
+copying validation/ddp.txt -> starling_ml-0.3.0/validation
+copying validation/tests.txt -> starling_ml-0.3.0/validation
+copying validation/wheel.txt -> starling_ml-0.3.0/validation
+copying starling_ml.egg-info/SOURCES.txt -> starling_ml-0.3.0/starling_ml.egg-info
+Writing starling_ml-0.3.0/setup.cfg
+Creating tar archive
+removing 'starling_ml-0.3.0' (and everything under it)
+Built: starling_ml-0.3.0.tar.gz
+Downloading cryptography (4.5MiB)
+Downloading pygments (1.2MiB)
+ Downloaded pygments
+ Downloaded cryptography
+Installed 27 packages in 9ms
+Checking dist/starling_ml-0.3.0-py3-none-any.whl: PASSED
+Checking dist/starling_ml-0.3.0.tar.gz: PASSED

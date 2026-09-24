@@ -1,0 +1,378 @@
+constants:
+  max_steps: 3
+  seed: 42
+  device: cpu
+modules:
+  seed:
+    params:
+      seed: $const:seed
+    class: starling_ml.modules.processing.runtime.Seed
+  dataset:
+    params:
+      factory: starling_ml.modules.data.general.SyntheticDataset
+      output: data.dataset
+      kwargs:
+        task: gan
+        spatial:
+        - 8
+        - 8
+        seed: 42
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+  batch:
+    params:
+      dataset: $ctx:data.dataset
+      outputs:
+        batch.input: input
+        batch.target: target
+      batch_size: 4
+      seed: 42
+    class: starling_ml.modules.data.general.BatchSource
+  model:
+    params:
+      factory: starling_ml.modules.models.architectures.MLP
+      output: model.raw
+      kwargs:
+        in_features: 4
+        out_features: 4
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+  device:
+    params:
+      model: $ctx:model.raw
+      device: $const:device
+      output: model.instance
+    class: starling_ml.modules.processing.runtime.PrepareModel
+  move_input:
+    params:
+      input: batch.input
+      device: $const:device
+    class: starling_ml.modules.processing.runtime.MoveToDevice
+  move_target:
+    params:
+      input: batch.target
+      device: $const:device
+    class: starling_ml.modules.processing.runtime.MoveToDevice
+  forward:
+    params:
+      model: $ctx:model.instance
+      input: batch.input
+      output: model.output
+    class: starling_ml.modules.forward.Forward
+  optimizer:
+    params:
+      model: $ctx:model.instance
+      lr: 0.001
+      loss: loss.generator
+    class: starling_ml.modules.optimization.OptimizationManager
+  run:
+    params:
+      max_steps: $const:max_steps
+      validate_at_end: false
+    class: starling_ml.modules.control.run.RunManager
+  discriminator:
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+    params:
+      factory: starling_ml.modules.models.architectures.MLP
+      kwargs:
+        in_features: 4
+        out_features: 1
+      output: discriminator.raw
+  discriminator_device:
+    class: starling_ml.modules.processing.runtime.PrepareModel
+    params:
+      model: $ctx:discriminator.raw
+      device: $const:device
+      output: discriminator.instance
+  detach:
+    class: starling_ml.modules.processing.runtime.Detach
+    params:
+      input: model.output
+      output: model.detached
+  d_real:
+    class: starling_ml.modules.forward.Forward
+    params:
+      model: $ctx:discriminator.instance
+      input: batch.input
+      output: d.real
+      training: true
+  loss_real:
+    class: starling_ml.modules.tasks.AdversarialLoss
+    params:
+      prediction: d.real
+      real: true
+      output: loss.real
+  d_fake:
+    class: starling_ml.modules.forward.Forward
+    params:
+      model: $ctx:discriminator.instance
+      input: model.detached
+      output: d.fake
+      training: true
+  loss_fake:
+    class: starling_ml.modules.tasks.AdversarialLoss
+    params:
+      prediction: d.fake
+      real: false
+      output: loss.fake
+  d_generator:
+    class: starling_ml.modules.forward.Forward
+    params:
+      model: $ctx:discriminator.instance
+      input: model.output
+      output: d.generator
+      training: true
+  loss_generator:
+    class: starling_ml.modules.tasks.AdversarialLoss
+    params:
+      prediction: d.generator
+      real: true
+      output: loss.generator
+  mix_d:
+    class: starling_ml.modules.losses.combine.LossMixer
+    params:
+      terms:
+      - loss: loss.real
+      - loss: loss.fake
+      output: loss.discriminator
+  optimizer_d:
+    class: starling_ml.modules.optimization.OptimizationManager
+    params:
+      model: $ctx:discriminator.instance
+      loss: loss.discriminator
+      prefix: optim.discriminator
+  freeze_d:
+    class: starling_ml.modules.processing.runtime.ModelMode
+    params:
+      model: $ctx:discriminator.instance
+      requires_grad: false
+  unfreeze_d:
+    class: starling_ml.modules.processing.runtime.ModelMode
+    params:
+      model: $ctx:discriminator.instance
+      requires_grad: true
+  report_loss:
+    class: starling_ml.modules.losses.combine.LossMixer
+    params:
+      terms:
+      - loss: loss.generator
+contracts:
+  seed:
+    creates: []
+    reads: []
+    mutates: []
+    updates: []
+  dataset:
+    creates:
+    - data.dataset
+    reads: []
+    mutates: []
+    updates: []
+  batch:
+    creates:
+    - batch.input
+    - batch.target
+    reads:
+    - data.dataset
+    mutates: []
+    updates: []
+  model:
+    creates:
+    - model.raw
+    reads: []
+    mutates: []
+    updates: []
+  device:
+    creates:
+    - model.instance
+    reads:
+    - model.raw
+    mutates:
+    - model.raw
+    updates: []
+  move_input:
+    creates: []
+    reads:
+    - batch.input
+    mutates: []
+    updates:
+    - batch.input
+  move_target:
+    creates: []
+    reads:
+    - batch.target
+    mutates: []
+    updates:
+    - batch.target
+  forward:
+    creates:
+    - model.output
+    reads:
+    - model.instance
+    - batch.input
+    mutates:
+    - model.instance
+    updates: []
+  optimizer:
+    creates:
+    - optim.main.optimizer
+    - optim.main.did_step
+    - optim.main.step
+    - optim.main.micro_step
+    - optim.main.grad_norm
+    - optim.main.skipped
+    reads:
+    - model.instance
+    - loss.generator
+    mutates:
+    - model.instance
+    updates: []
+  run:
+    creates:
+    - run.step
+    - run.phase
+    - run.validation_index
+    - run.validation_due
+    - run.stop
+    reads: []
+    mutates: []
+    updates: []
+  discriminator:
+    creates:
+    - discriminator.raw
+    reads: []
+    mutates: []
+    updates: []
+  discriminator_device:
+    creates:
+    - discriminator.instance
+    reads:
+    - discriminator.raw
+    mutates:
+    - discriminator.raw
+    updates: []
+  detach:
+    creates:
+    - model.detached
+    reads:
+    - model.output
+    mutates: []
+    updates: []
+  d_real:
+    creates:
+    - d.real
+    reads:
+    - discriminator.instance
+    - batch.input
+    mutates:
+    - discriminator.instance
+    updates: []
+  loss_real:
+    creates:
+    - loss.real
+    reads:
+    - d.real
+    mutates: []
+    updates: []
+  d_fake:
+    creates:
+    - d.fake
+    reads:
+    - discriminator.instance
+    - model.detached
+    mutates:
+    - discriminator.instance
+    updates: []
+  loss_fake:
+    creates:
+    - loss.fake
+    reads:
+    - d.fake
+    mutates: []
+    updates: []
+  d_generator:
+    creates:
+    - d.generator
+    reads:
+    - discriminator.instance
+    - model.output
+    mutates:
+    - discriminator.instance
+    updates: []
+  loss_generator:
+    creates:
+    - loss.generator
+    reads:
+    - d.generator
+    mutates: []
+    updates: []
+  mix_d:
+    creates:
+    - loss.discriminator
+    reads:
+    - loss.real
+    - loss.fake
+    mutates: []
+    updates: []
+  optimizer_d:
+    creates:
+    - optim.discriminator.optimizer
+    - optim.discriminator.did_step
+    - optim.discriminator.step
+    - optim.discriminator.micro_step
+    - optim.discriminator.grad_norm
+    - optim.discriminator.skipped
+    reads:
+    - discriminator.instance
+    - loss.discriminator
+    mutates:
+    - discriminator.instance
+    updates: []
+  freeze_d:
+    creates: []
+    reads:
+    - discriminator.instance
+    mutates:
+    - discriminator.instance
+    updates: []
+  unfreeze_d:
+    creates: []
+    reads:
+    - discriminator.instance
+    mutates:
+    - discriminator.instance
+    updates: []
+  report_loss:
+    creates:
+    - train.loss
+    reads:
+    - loss.generator
+    mutates: []
+    updates: []
+pipeline:
+- signal: run_started
+- while:
+    condition: $ctx:run.stop
+    equals: false
+    max_iterations: 100000
+    body:
+    - call: batch
+    - call: move_input
+    - call: move_target
+    - call: unfreeze_d
+    - call: forward
+    - call: detach
+    - call: d_real
+    - call: d_fake
+    - call: loss_real
+    - call: loss_fake
+    - call: mix_d
+    - call: optimizer_d
+    - call: freeze_d
+    - call: forward
+    - call: d_generator
+    - call: loss_generator
+    - call: optimizer
+    - call: report_loss
+    - when:
+        condition: $ctx:optim.main.did_step
+        body:
+        - signal: step_completed

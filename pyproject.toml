@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "starling-ml"
+version = "0.3.0"
+description = "Readable shared-context orchestration for modular ML experiments"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Alex-zcl"},
+]
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6", "torch>=2.3"]
+keywords = [
+    "machine-learning",
+    "pytorch",
+    "training-engine",
+    "segmentation",
+    "configuration",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.optional-dependencies]
+detection = ["scipy"]
+progress = ["tqdm"]
+tracking = ["tensorboard", "clearml"]
+smp = ["segmentation-models-pytorch"]
+transformers = ["transformers"]
+diffusers = ["diffusers"]
+monai = ["monai"]
+nnunet = ["nnunetv2"]
+surfaces = ["scikit-image"]
+all = [
+    "scipy",
+    "tqdm",
+    "tensorboard",
+    "clearml",
+    "segmentation-models-pytorch",
+    "transformers",
+    "diffusers",
+    "monai",
+    "nnunetv2",
+    "scikit-image",
+]
+
+[project.scripts]
+starling-ml = "starling_ml.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Alex-zcl/starling-ml"
+Repository = "https://github.com/Alex-zcl/starling-ml"
+Issues = "https://github.com/Alex-zcl/starling-ml/issues"
+Changelog = "https://github.com/Alex-zcl/starling-ml/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["starling_ml*"]

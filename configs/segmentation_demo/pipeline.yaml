@@ -1,0 +1,34 @@
+- signal: run_started
+
+- while:
+    condition: $ctx:run.stop
+    equals: false
+    body:
+      - call: TrainData
+      - call: TrainForward
+      - call: BCE
+      - call: Dice
+      - call: Loss
+      - call: TrainMetrics
+      - call: Optimization
+
+      # Global step завершается только после реального optimizer.step().
+      - when:
+          condition: $ctx:optim.main.did_step
+          equals: true
+          body:
+            - signal: step_completed
+
+      # RunManager сам выставляет validation_due через каждые N global steps.
+      - when:
+          condition: $ctx:run.validation_due
+          equals: true
+          body:
+            - loop:
+                count: $const:validation_steps
+                body:
+                  - call: ValidationData
+                  - call: ValidationForward
+                  - call: ValidationMetrics
+                  - signal: validation_step_end
+            - signal: validation_completed

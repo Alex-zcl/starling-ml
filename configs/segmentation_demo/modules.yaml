@@ -1,0 +1,164 @@
+DataSpec:
+  class: starling_ml.modules.data.synthetic.SyntheticSegmentationSpec
+  params:
+    classes: $const:classes
+    in_channels: 1
+
+Run:
+  class: starling_ml.modules.control.run.RunManager
+  params:
+    max_steps: $const:max_steps
+    validate_every: $const:validate_every
+    validate_at_end: true
+
+TrainData:
+  class: starling_ml.modules.data.synthetic.SyntheticSegmentationBatch
+  params:
+    batch_size: $const:batch_size
+    image_size: $const:image_size
+    classes: $const:classes
+    seed: $const:seed
+    output_image: train.batch.image
+    output_mask: train.batch.mask
+
+ValidationData:
+  class: starling_ml.modules.data.synthetic.SyntheticSegmentationBatch
+  params:
+    batch_size: $const:batch_size
+    image_size: $const:image_size
+    classes: $const:classes
+    seed: 10042
+    output_image: validation.batch.image
+    output_mask: validation.batch.mask
+
+Model:
+  class: starling_ml.modules.models.basic.TinySegmenter
+  params:
+    in_channels: $ctx:data.in_channels
+    classes: $ctx:data.num_classes
+    hidden: $const:hidden
+    seed: $const:seed
+
+TrainForward:
+  class: starling_ml.modules.forward.Forward
+  params:
+    model: $ctx:model.instance
+    input: train.batch.image
+    output: train.model.logits
+    training: true
+    grad: true
+
+ValidationForward:
+  class: starling_ml.modules.forward.Forward
+  params:
+    model: $ctx:model.instance
+    input: validation.batch.image
+    output: validation.model.logits
+    training: false
+    grad: false
+
+AdaptiveWeights:
+  class: starling_ml.modules.control.weights.MetricAdaptiveWeights
+  params:
+    num_classes: $ctx:data.num_classes
+    precision: metrics.validation.precision
+    recall: metrics.validation.recall
+    positive: weights.positive
+    negative: weights.negative
+    class_weight: weights.class
+    phase: validation
+    momentum: 0.5
+    max_change: 0.25
+    min_value: 0.5
+    max_value: 2.0
+
+DiceWeight:
+  class: starling_ml.modules.control.weights.LinearWeightSchedule
+  params:
+    output: weights.loss.dice
+    start: 0.0
+    target: 0.5
+    steps: $const:max_steps
+
+BCE:
+  class: starling_ml.modules.losses.basic.BCEWithLogits
+  params:
+    prediction: train.model.logits
+    target: train.batch.mask
+    output: loss.bce
+    positive_weight: weights.positive
+    negative_weight: weights.negative
+
+Dice:
+  class: starling_ml.modules.losses.overlap.DiceLoss
+  params:
+    prediction: train.model.logits
+    target: train.batch.mask
+    output: loss.dice
+    class_weight: weights.class
+    empty_target: false_positive
+    aggregation: sample
+
+Loss:
+  class: starling_ml.modules.losses.combine.LossMixer
+  params:
+    output: train.loss
+    mode: normalized_sum
+    terms:
+      - loss: loss.bce
+        weight: 1.0
+      - loss: loss.dice
+        weight_key: weights.loss.dice
+
+Optimization:
+  class: starling_ml.modules.optimization.OptimizationManager
+  params:
+    model: $ctx:model.instance
+    loss: train.loss
+    optimizer: adam
+    lr: $const:learning_rate
+    accumulation: 1
+    clip_grad_norm: 5.0
+    prefix: optim.main
+
+TrainMetrics:
+  class: starling_ml.modules.metrics.segmentation.SegmentationMetrics
+  params:
+    num_classes: $ctx:data.num_classes
+    prediction: train.model.logits
+    target: train.batch.mask
+    prefix: metrics.train
+    phase: train
+    reset_on: validation_start
+    finalize_on: validation_start
+
+ValidationMetrics:
+  class: starling_ml.modules.metrics.segmentation.SegmentationMetrics
+  params:
+    num_classes: $ctx:data.num_classes
+    prediction: validation.model.logits
+    target: validation.batch.mask
+    prefix: metrics.validation
+    phase: validation
+    reset_on: validation_start
+    finalize_on: validation_end
+
+Logger:
+  class: starling_ml.modules.monitoring.basic.ConsoleLogger
+  params:
+    every: $const:log_every
+    scalars:
+      loss: train.loss
+      train_dice: metrics.train.dice_mean
+      val_dice: metrics.validation.dice_mean
+
+Progress:
+  class: starling_ml.modules.monitoring.progress.TqdmReporter
+  params:
+    total: $const:max_steps
+    validation_total: $const:validation_steps
+    enabled: $const:use_tqdm
+    train_scalars:
+      loss: train.loss
+    validation_scalars:
+      dice: metrics.validation.dice_mean

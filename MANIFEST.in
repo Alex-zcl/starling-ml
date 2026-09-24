@@ -1,0 +1,11 @@
+include *.md
+include LICENSE
+include run_demo.py
+recursive-include configs *.yaml
+recursive-include examples *.py
+recursive-include tests *.py
+prune build
+prune dist
+prune torchinductor_root
+global-exclude __pycache__ *.pyc
+recursive-include validation *.txt

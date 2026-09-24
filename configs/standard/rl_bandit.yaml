@@ -1,0 +1,210 @@
+constants:
+  max_steps: 3
+  seed: 42
+  device: cpu
+modules:
+  seed:
+    params:
+      seed: $const:seed
+    class: starling_ml.modules.processing.runtime.Seed
+  dataset:
+    params:
+      factory: starling_ml.modules.data.general.SyntheticDataset
+      output: data.dataset
+      kwargs:
+        task: classification
+        spatial:
+        - 8
+        - 8
+        seed: 42
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+  batch:
+    params:
+      dataset: $ctx:data.dataset
+      outputs:
+        batch.input: input
+        batch.target: target
+      batch_size: 4
+      seed: 42
+    class: starling_ml.modules.data.general.BatchSource
+  model:
+    params:
+      factory: starling_ml.modules.models.architectures.MLP
+      output: model.raw
+      kwargs:
+        in_features: 4
+        out_features: 3
+    class: starling_ml.modules.processing.runtime.ObjectFactory
+  device:
+    params:
+      model: $ctx:model.raw
+      device: $const:device
+      output: model.instance
+    class: starling_ml.modules.processing.runtime.PrepareModel
+  move_input:
+    params:
+      input: batch.input
+      device: $const:device
+    class: starling_ml.modules.processing.runtime.MoveToDevice
+  move_target:
+    params:
+      input: batch.target
+      device: $const:device
+    class: starling_ml.modules.processing.runtime.MoveToDevice
+  forward:
+    params:
+      model: $ctx:model.instance
+      input: batch.input
+      output: model.output
+    class: starling_ml.modules.forward.Forward
+  action:
+    params:
+      logits: model.output
+    class: starling_ml.modules.tasks.CategoricalAction
+  reward:
+    params:
+      action: rl.action
+      target: batch.target
+    class: starling_ml.modules.tasks.BanditReward
+  loss:
+    params:
+      log_probability: rl.log_probability
+      advantage: rl.reward
+      entropy: rl.entropy
+    class: starling_ml.modules.tasks.PolicyLoss
+  optimizer:
+    params:
+      model: $ctx:model.instance
+      lr: 0.001
+    class: starling_ml.modules.optimization.OptimizationManager
+  run:
+    params:
+      max_steps: $const:max_steps
+      validate_at_end: false
+    class: starling_ml.modules.control.run.RunManager
+contracts:
+  seed:
+    creates: []
+    reads: []
+    mutates: []
+    updates: []
+  dataset:
+    creates:
+    - data.dataset
+    reads: []
+    mutates: []
+    updates: []
+  batch:
+    creates:
+    - batch.input
+    - batch.target
+    reads:
+    - data.dataset
+    mutates: []
+    updates: []
+  model:
+    creates:
+    - model.raw
+    reads: []
+    mutates: []
+    updates: []
+  device:
+    creates:
+    - model.instance
+    reads:
+    - model.raw
+    mutates:
+    - model.raw
+    updates: []
+  move_input:
+    creates: []
+    reads:
+    - batch.input
+    mutates: []
+    updates:
+    - batch.input
+  move_target:
+    creates: []
+    reads:
+    - batch.target
+    mutates: []
+    updates:
+    - batch.target
+  forward:
+    creates:
+    - model.output
+    reads:
+    - model.instance
+    - batch.input
+    mutates:
+    - model.instance
+    updates: []
+  action:
+    creates:
+    - rl.action
+    - rl.log_probability
+    - rl.entropy
+    reads:
+    - model.output
+    mutates: []
+    updates: []
+  reward:
+    creates:
+    - rl.reward
+    reads:
+    - rl.action
+    - batch.target
+    mutates: []
+    updates: []
+  loss:
+    creates:
+    - train.loss
+    reads:
+    - rl.log_probability
+    - rl.reward
+    - rl.entropy
+    mutates: []
+    updates: []
+  optimizer:
+    creates:
+    - optim.main.optimizer
+    - optim.main.did_step
+    - optim.main.step
+    - optim.main.micro_step
+    - optim.main.grad_norm
+    - optim.main.skipped
+    reads:
+    - model.instance
+    - train.loss
+    mutates:
+    - model.instance
+    updates: []
+  run:
+    creates:
+    - run.step
+    - run.phase
+    - run.validation_index
+    - run.validation_due
+    - run.stop
+    reads: []
+    mutates: []
+    updates: []
+pipeline:
+- signal: run_started
+- while:
+    condition: $ctx:run.stop
+    equals: false
+    max_iterations: 100000
+    body:
+    - call: batch
+    - call: move_input
+    - call: move_target
+    - call: forward
+    - call: action
+    - call: reward
+    - call: loss
+    - call: optimizer
+    - when:
+        condition: $ctx:optim.main.did_step
+        body:
+        - signal: step_completed
