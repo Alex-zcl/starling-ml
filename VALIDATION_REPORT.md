@@ -1,6 +1,6 @@
-# Отчёт проверки 0.3.0
+# Отчёт проверки 0.4.0
 
-Дата: 2026-09-24. Проверялось фактическое содержимое релиза Starling ML 0.3.0.
+Дата: 2026-09-25. Проверялось фактическое содержимое релиза Starling ML 0.4.0.
 
 ## Среда
 
@@ -13,8 +13,12 @@ CUDA недоступна. Network sockets для Gloo запрещены сре
 
 | Проверка | Результат |
 |---|---|
-| unittest discovery | **72 tests, OK** |
+| unittest discovery | **78 tests, OK** |
 | 15 standard configs | обучение на CPU с реальными forward/backward/optimizer steps |
+| RunManager + PhaseManager | start/periodic/final validation, zero steps, stop и checkpoint continuation |
+| config composition | strict conflicts, recipe + monitoring profiles, phase template expansion |
+| phase metrics/loss | независимые train/validation accumulators и отдельный validation objective |
+| monitoring | console/text smoke, run directories и cleanup tqdm до setup |
 | classification/segmentation/token shapes | отдельные math tests и synthetic recipes |
 | FP16/BF16 zero weights | finite loss и backward на CPU |
 | большие FP16 overlap sums | finite forward/backward |
@@ -27,7 +31,7 @@ CUDA недоступна. Network sockets для Gloo запрещены сре
 | config analyzer | syntax/signature/references/cycles, warnings, metadata, published loss outputs |
 | weight signals | результат не зависит от порядка producer/consumer в config |
 | независимые workers | два spawn-процесса, разные outputs/checkpoints |
-| wheel build/install | wheel собран, установлен в отдельный target, импорт подтверждён из installed path |
+| wheel build/install | wheel 0.4.0 собран, установлен в отдельный target, импорт подтверждён из installed path |
 | installed public API | все 15 recipes запущены из установленного wheel |
 | CLI analyzer | опубликована понятная сводка weighted segmentation |
 | source distribution | собран setuptools backend |
@@ -69,6 +73,5 @@ python examples/check_ddp.py
 python -m starling_ml --recipe weighted_segmentation --analyze-only
 ```
 
-Ранее сообщавшиеся «78 тестов» не подтверждались сохранёнными файлами; данный отчёт
-заменяет эту цифру фактическим повторным прогоном. При будущих изменениях обновлять
-отчёт после тестов, а не сохранять старую цифру автоматически.
+78 тестов относятся к фактическому повторному прогону 0.4.0. При будущих изменениях
+обновлять отчёт после тестов, а не сохранять старую цифру автоматически.

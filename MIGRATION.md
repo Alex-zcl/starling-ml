@@ -1,4 +1,23 @@
-# Переход 0.2 → 0.3
+# Переход на 0.4
+
+## 0.3 → 0.4
+
+1. Старый `get_config()` и ручное добавление modules продолжают работать.
+2. Для готового запуска используйте `get_experiment_config(..., monitoring=...)` или
+   низкоуровневый `compose(recipe(...), monitoring_profile(...))`.
+3. Новые Python-конфиги используют RunManager только для global step/stop, а переходы
+   train/validation принадлежат PhaseManager. Legacy-поля `run.phase`,
+   `run.validation_due` и старые lifecycle signals временно публикуются для совместимости.
+4. Универсальные события: `phase_started`, `phase_step_end`, `phase_ended`,
+   `phase_completed`; текущее состояние находится в `phase.name/index/step/cycle/due`.
+5. Stateful metrics/losses следует создавать отдельно на фазу. `phase_module()` умеет
+   развернуть `{phase}`-шаблон; validation class/params можно переопределить.
+6. Профили логирования не входят в task recipe и не влияют на objective. `standard` —
+   console/progress/text, `tracking` добавляет TensorBoard, ClearML выбирается явно.
+7. `segmentation_validation` теперь публикует отдельные train/validation metrics и
+   `validation.loss`; это добавляет ключи, но не меняет train objective.
+
+## 0.2 → 0.3
 
 До первого публичного релиза исправлено рабочее название: distribution
 `starlilng-ml` → `starling-ml`, import `starlilng` → `starling_ml`. Старый import

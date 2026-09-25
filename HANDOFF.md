@@ -14,7 +14,7 @@ print(analyze_config(config))
 Engine(config).run()
 ```
 
-Distribution name: `starling-ml`; import name: `starling_ml`; версия: `0.3.0`.
+Distribution name: `starling-ml`; import name: `starling_ml`; версия: `0.4.0`.
 Проект лицензирован по MIT и предназначен для публичного репозитория
 `Alex-zcl/starling-ml`. Имя distribution `starling-ml` проверено как свободное в
 PyPI 24 сентября 2026 года. Import name намеренно не сокращается до `starling`:
@@ -25,7 +25,7 @@ PyPI 24 сентября 2026 года. Import name намеренно не со
 - исходники Python-пакета;
 - pyproject.toml, MANIFEST.in, собранные wheel и source distribution в dist;
 - unit/regression tests и отдельные scripts для DDP и независимых workers;
-- 15 standard configs внутри пакета, старые YAML, examples;
+- 15 standard configs, composable fragments, phase/monitoring profiles, YAML и examples;
 - документация архитектуры, весов, анализатора, migration, состояние проверок;
 - исторические audit/design материалы;
 - SHA256SUMS.txt для проверки содержимого, кроме самого файла checksums.
@@ -79,6 +79,10 @@ setuptools.build_meta.build_wheel/build_sdist, затем wheel установл
 3. Реальные dataset recipes для SMP/MONAI/HF/VLM/diffusion, полноценный RL rollout.
 4. Проверка Trusted Publisher, GitHub Release и установки опубликованного wheel.
 5. Форматирование нового кода единым formatter без удаления русских объяснений.
+
+В 0.4 RunManager отделён от PhaseManager. Новые возможности подключаются через
+`compose`, а не копированием полного task config. При развитии lifecycle сохраняйте
+phase-neutral Engine и отдельные экземпляры stateful metrics/losses на фазу.
 
 Нельзя считать пункт выполненным только потому, что здесь существует wrapper или
 примитив. Точная матрица готовности находится в INTEGRATIONS.md.

@@ -1,4 +1,4 @@
-# Starling ML 0.3.0
+# Starling ML 0.4.0
 
 [![CI](https://github.com/Alex-zcl/starling-ml/actions/workflows/ci.yml/badge.svg)](https://github.com/Alex-zcl/starling-ml/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/starling-ml.svg)](https://pypi.org/project/starling-ml/)
@@ -28,6 +28,23 @@ print(report)
 report.raise_for_errors()
 engine = Engine(config).run()
 ```
+
+Для полноценного запуска с готовым профилем наблюдения:
+
+```python
+from starling_ml import Engine, get_experiment_config
+
+config = get_experiment_config(
+    "segmentation_validation",
+    max_steps=5,
+    monitoring="standard",  # console + tqdm + runs/.../experiment.log
+    monitoring_options={"run_name": "first-segmentation"},
+)
+Engine(config).run()
+```
+
+Для `standard` установите `starling-ml[progress]`; профиль `tracking` дополнительно
+пишет TensorBoard. ClearML включается только явно профилем `clearml`.
 
 Стандартные конфиги используют маленькие синтетические datasets и модели.
 Они проверяют исполнимость сценария, но не заменяют подготовку реального dataset.
@@ -64,6 +81,38 @@ Engine("experiment.yaml").run()
 Контракт объявляет `creates`, `reads`, `updates` и `mutates`. Setup сортируется по
 зависимостям `$ctx`; runtime pipeline выполняется в записанном пользователем порядке.
 Конфиги с пользовательскими import paths должны быть доверенными Python-конфигами.
+
+## Частичные конфиги и фазы
+
+Готовый recipe и независимые возможности можно собирать без вариантов файлов
+«с логами/без логов». `compose` запрещает молчаливую перезапись одинаковых модулей:
+
+```python
+from starling_ml import Engine, compose, recipe, monitoring_profile
+
+config = compose(
+    recipe("segmentation_validation", max_steps=5),
+    monitoring_profile(
+        "standard",
+        run_name="experiment-01",
+        phase_scalars={
+            "train": {"loss": "train.loss", "dice": "metrics.train.dice_mean"},
+            "validation": {"dice": "metrics.validation.dice_mean"},
+        },
+    ),
+)
+Engine(config).run()
+```
+
+`RunManager` отвечает только за глобальный lifecycle и успешные optimizer steps.
+`PhaseManager` владеет текущей фазой, переходами и счётчиками `phase.*`. Engine не
+содержит специальных веток для train/validation. Для stateful loss/metrics используйте
+отдельные экземпляры; `phase_module()` разворачивает шаблон с `{phase}` в независимые
+train/validation-модули. Низкоуровневые явные modules/contracts/pipeline сохранены.
+
+Профили monitoring: `none`, `console`, `progress`, `text`, `tensorboard`, `clearml`,
+`standard` и `tracking`. Общий `RunDirectoryManager` публикует пути к log,
+TensorBoard, checkpoints и artifacts; логгеры только читают Context.
 
 ## Стандартные сценарии
 

@@ -85,7 +85,31 @@ def get_config(task="segmentation", *, max_steps=3, seed=42, device="cpu"):
         body += [dict(call="dice"), dict(call="mix")]
     optim_keys = ["optim.main." + k for k in ("optimizer", "did_step", "step", "micro_step", "grad_norm", "skipped")]
     add("optimizer", "starling_ml.modules.optimization.OptimizationManager", dict(model="$ctx:model.instance", lr=.001), reads=["model.instance", "train.loss"], mutates=["model.instance"], creates=optim_keys)
-    add("run", "starling_ml.modules.control.run.RunManager", dict(max_steps="$const:max_steps", validate_at_end=False), creates=["run." + k for k in ("step", "phase", "validation_index", "validation_due", "stop")])
+    # RunManager считает только глобальные optimizer steps и завершение запуска.
+    add(
+        "run",
+        "starling_ml.modules.control.run.RunManager",
+        dict(max_steps="$const:max_steps", defer_finish=True),
+        creates=["run." + k for k in ("step", "status", "finish_requested", "stop")],
+    )
+    # PhaseManager владеет train/validation lifecycle. Legacy run.phase/validation_*
+    # пока публикуются для совместимости пользовательских модулей версии 0.3.
+    add(
+        "phase",
+        "starling_ml.modules.control.phase.PhaseManager",
+        dict(validate_at_end=False),
+        reads=["run.step", "run.finish_requested", "run.stop"],
+        creates=[
+            "phase.name",
+            "phase.index",
+            "phase.step",
+            "phase.cycle",
+            "phase.due",
+            "run.phase",
+            "run.validation_index",
+            "run.validation_due",
+        ],
+    )
     body += [dict(call="optimizer"), dict(when=dict(condition="$ctx:optim.main.did_step", body=[dict(signal="step_completed")]))]
     config["pipeline"] = [dict(signal="run_started"), dict(while_=None)]
     config["pipeline"][1] = {"while": dict(condition="$ctx:run.stop", equals=False, max_iterations=100000, body=body)}
@@ -95,3 +119,44 @@ def get_config(task="segmentation", *, max_steps=3, seed=42, device="cpu"):
 STANDARD_CONFIGS = ("segmentation", "segmentation3d", "multilabel", "classification", "regression", "language_model", "diffusion", "contrastive", "distillation", "rl_bandit")
 
 STANDARD_CONFIGS += ("weighted_segmentation", "segmentation_validation", "gan", "detection", "instance_segmentation")
+
+
+def get_experiment_config(
+    task="segmentation",
+    *,
+    monitoring="console",
+    monitoring_options=None,
+    **recipe_options,
+):
+    """Готовый experiment config: recipe плюс выбранные профили наблюдения.
+
+    ``monitoring`` принимает имя или последовательность имён. Значение ``None``
+    оставляет чистый recipe без логгеров. Более низкоуровневый эквивалент —
+    ``compose(recipe(...), monitoring_profile(...))``.
+    """
+
+    config = get_config(task, **recipe_options)
+    if monitoring is None or monitoring is False:
+        return config
+    profiles = (monitoring,) if isinstance(monitoring, str) else tuple(monitoring)
+    from .composition import compose
+    from .monitoring import monitoring_profile
+
+    profile_options = dict(monitoring_options or {})
+    if task == "segmentation_validation":
+        profile_options.setdefault(
+            "scalars",
+            {"loss": "train.loss", "dice": "metrics.train.dice_mean"},
+        )
+        profile_options.setdefault(
+            "phase_scalars",
+            {
+                "train": {"loss": "train.loss", "dice": "metrics.train.dice_mean"},
+                "validation": {
+                    "loss": "validation.loss",
+                    "dice": "metrics.validation.dice_mean",
+                    "iou": "metrics.validation.iou_mean",
+                },
+            },
+        )
+    return compose(config, monitoring_profile(*profiles, **profile_options))

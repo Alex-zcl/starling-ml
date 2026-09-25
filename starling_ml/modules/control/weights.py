@@ -268,18 +268,20 @@ class LinearWeightSchedule(Module):
         target,
         steps,
         step_key="run.step",
-        signal="train_step_end",
+        signal=None,
     ):
         self.output = output
         self.start = float(start)
         self.target = float(target)
         self.steps = max(int(steps), 1)
         self.step_key = step_key
-        self.listen_signal = signal
+        # В 0.4 глобальный RunManager публикует phase-neutral run_step_end.
+        # Явно заданный старый train_step_end по-прежнему поддерживается.
+        self.listen_signals = {signal} if signal else {"run_step_end", "train_step_end"}
         self.context[output] = self.start
 
     def reaction(self, signal, source=None, **payload):
-        if signal != self.listen_signal:
+        if signal not in self.listen_signals:
             return
         step = min(int(self.context[self.step_key]), self.steps)
         alpha = step / self.steps

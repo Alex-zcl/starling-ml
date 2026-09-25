@@ -12,12 +12,16 @@ class ClearMLLogger(Module):
         project_name,
         task_name,
         scalars=None,
+        phase_scalars=None,
         signals=("train_step_end", "metrics_ready"),
         step_key="run.step",
         enabled=True,
         auto_connect_tensorboard=False,
     ):
         self.scalars = dict(scalars or {})
+        self.phase_scalars = {
+            phase: dict(values) for phase, values in (phase_scalars or {}).items()
+        }
         self.signals = set(signals)
         self.step_key = step_key
         self.enabled = bool(enabled)
@@ -42,17 +46,20 @@ class ClearMLLogger(Module):
         if not self.enabled:
             return
         if signal in self.signals:
-            self._write()
+            self._write(payload.get("phase"))
         if signal == "run_end" and self.task is not None:
             self.task.close()
 
-    def _write(self):
+    def _write(self, phase=None):
         """Разделяет tag `title/series` в нативный формат ClearML."""
         step = int(self.context.get(self.step_key, 0))
-        for tag, key in self.scalars.items():
+        selected = self.phase_scalars.get(phase, self.scalars)
+        for tag, key in selected.items():
             value = self.context.get(key)
             if value is None:
                 continue
+            if phase in self.phase_scalars:
+                tag = f"{phase}/{tag}"
             title, _, series = tag.partition("/")
             if not series:
                 title, series = "scalars", title

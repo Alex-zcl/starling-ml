@@ -1,4 +1,4 @@
-# Философия движка — 0.3.0
+# Философия движка — 0.4.0
 
 ## Пользователь работает с конфигом
 
@@ -50,12 +50,25 @@ FP16/BF16 sums выполняются в FP32. Нулевой denominator даё
 не скрытый NaN. Полностью невалидные samples/classes исключаются из соответствующих
 средних. Неизвестная разметка не превращается в отрицательную.
 
-## Lifecycle и state
+## Lifecycle, фазы и state
 
-RunManager ведёт logical step. OptimizationManager сообщает did_step; pipeline решает,
-какой optimizer завершает логический шаг при нескольких моделях. Validation использует
-явные grad/mode настройки. Stop идемпотентен и не должен повторно запускать validation.
-Train metrics публикуют последнее незавершённое окно при run_end.
+RunManager ведёт global logical step, status и окончание всего запуска, но не знает имён
+train/validation/test. OptimizationManager сообщает did_step; pipeline решает, какой
+optimizer завершает логический шаг при нескольких моделях. PhaseManager отвечает за
+активную фазу, переходы, циклы и обязательную финальную фазу до run_end.
+
+Фаза не является скрытым глобальным режимом для всех модулей. Stateful metrics и losses
+получают отдельные экземпляры на фазу; shared model/optimizer остаются run-scoped.
+`phase_module` уменьшает дублирование деклараций, но после композиции Engine видит обычные
+явные modules и contracts. Validation использует явные grad/mode настройки. Stop
+идемпотентен и не должен повторно запускать validation.
+
+## Композиция и профили
+
+Recipe, пользовательские modules и monitoring — независимые фрагменты. `compose` не
+использует last-write-wins: совпадение имён является ошибкой, пока замена не объявлена
+явно. Поэтому набор логгеров не размножает task-конфиги. Standard/tracking профили
+добавляют наблюдение, а ClearML остаётся отдельным явным действием с внешним эффектом.
 
 Каждый stateful module описывает state_dict/load_state_dict. Checkpoint-функции сохраняют
 состояния и RNG вне Engine. Встроенный BatchSource сохраняет permutation/cursor;

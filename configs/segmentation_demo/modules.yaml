@@ -1,164 +1,145 @@
-DataSpec:
-  class: starling_ml.modules.data.synthetic.SyntheticSegmentationSpec
+seed:
   params:
-    classes: $const:classes
-    in_channels: 1
-
-Run:
-  class: starling_ml.modules.control.run.RunManager
+    seed: $const:seed
+  class: starling_ml.modules.processing.runtime.Seed
+dataset:
+  params:
+    factory: starling_ml.modules.data.general.SyntheticDataset
+    output: data.dataset
+    kwargs:
+      task: segmentation
+      spatial:
+      - 8
+      - 8
+      seed: 42
+  class: starling_ml.modules.processing.runtime.ObjectFactory
+batch:
+  params:
+    dataset: $ctx:data.dataset
+    outputs:
+      batch.input: input
+      batch.target: target
+    batch_size: 4
+    seed: 42
+  class: starling_ml.modules.data.general.BatchSource
+model:
+  params:
+    factory: starling_ml.modules.models.architectures.Segmenter
+    output: model.raw
+    kwargs:
+      classes: 3
+      spatial_dims: 2
+  class: starling_ml.modules.processing.runtime.ObjectFactory
+device:
+  params:
+    model: $ctx:model.raw
+    device: $const:device
+    output: model.instance
+  class: starling_ml.modules.processing.runtime.PrepareModel
+move_input:
+  params:
+    input: batch.input
+    device: $const:device
+  class: starling_ml.modules.processing.runtime.MoveToDevice
+move_target:
+  params:
+    input: batch.target
+    device: $const:device
+  class: starling_ml.modules.processing.runtime.MoveToDevice
+forward:
+  params:
+    model: $ctx:model.instance
+    input: batch.input
+    output: model.output
+  class: starling_ml.modules.forward.Forward
+loss:
+  params:
+    prediction: model.output
+    target: batch.target
+    output: loss.pointwise
+  class: starling_ml.modules.losses.basic.CrossEntropy
+dice:
+  params:
+    prediction: model.output
+    target: batch.target
+    output: loss.dice
+    mode: multiclass
+    empty_target: false_positive
+  class: starling_ml.modules.losses.overlap.DiceLoss
+mix:
+  params:
+    terms:
+    - loss: loss.pointwise
+    - loss: loss.dice
+  class: starling_ml.modules.losses.combine.LossMixer
+optimizer:
+  params:
+    model: $ctx:model.instance
+    lr: 0.001
+  class: starling_ml.modules.optimization.OptimizationManager
+run:
   params:
     max_steps: $const:max_steps
-    validate_every: $const:validate_every
+    defer_finish: true
+  class: starling_ml.modules.control.run.RunManager
+phase:
+  params:
     validate_at_end: true
-
-TrainData:
-  class: starling_ml.modules.data.synthetic.SyntheticSegmentationBatch
-  params:
-    batch_size: $const:batch_size
-    image_size: $const:image_size
-    classes: $const:classes
-    seed: $const:seed
-    output_image: train.batch.image
-    output_mask: train.batch.mask
-
-ValidationData:
-  class: starling_ml.modules.data.synthetic.SyntheticSegmentationBatch
-  params:
-    batch_size: $const:batch_size
-    image_size: $const:image_size
-    classes: $const:classes
-    seed: 10042
-    output_image: validation.batch.image
-    output_mask: validation.batch.mask
-
-Model:
-  class: starling_ml.modules.models.basic.TinySegmenter
-  params:
-    in_channels: $ctx:data.in_channels
-    classes: $ctx:data.num_classes
-    hidden: $const:hidden
-    seed: $const:seed
-
-TrainForward:
-  class: starling_ml.modules.forward.Forward
-  params:
-    model: $ctx:model.instance
-    input: train.batch.image
-    output: train.model.logits
-    training: true
-    grad: true
-
-ValidationForward:
-  class: starling_ml.modules.forward.Forward
-  params:
-    model: $ctx:model.instance
-    input: validation.batch.image
-    output: validation.model.logits
-    training: false
-    grad: false
-
-AdaptiveWeights:
-  class: starling_ml.modules.control.weights.MetricAdaptiveWeights
-  params:
-    num_classes: $ctx:data.num_classes
-    precision: metrics.validation.precision
-    recall: metrics.validation.recall
-    positive: weights.positive
-    negative: weights.negative
-    class_weight: weights.class
-    phase: validation
-    momentum: 0.5
-    max_change: 0.25
-    min_value: 0.5
-    max_value: 2.0
-
-DiceWeight:
-  class: starling_ml.modules.control.weights.LinearWeightSchedule
-  params:
-    output: weights.loss.dice
-    start: 0.0
-    target: 0.5
-    steps: $const:max_steps
-
-BCE:
-  class: starling_ml.modules.losses.basic.BCEWithLogits
-  params:
-    prediction: train.model.logits
-    target: train.batch.mask
-    output: loss.bce
-    positive_weight: weights.positive
-    negative_weight: weights.negative
-
-Dice:
-  class: starling_ml.modules.losses.overlap.DiceLoss
-  params:
-    prediction: train.model.logits
-    target: train.batch.mask
-    output: loss.dice
-    class_weight: weights.class
-    empty_target: false_positive
-    aggregation: sample
-
-Loss:
-  class: starling_ml.modules.losses.combine.LossMixer
-  params:
-    output: train.loss
-    mode: normalized_sum
-    terms:
-      - loss: loss.bce
-        weight: 1.0
-      - loss: loss.dice
-        weight_key: weights.loss.dice
-
-Optimization:
-  class: starling_ml.modules.optimization.OptimizationManager
-  params:
-    model: $ctx:model.instance
-    loss: train.loss
-    optimizer: adam
-    lr: $const:learning_rate
-    accumulation: 1
-    clip_grad_norm: 5.0
-    prefix: optim.main
-
-TrainMetrics:
+    validate_every: 2
+    validate_at_start: true
+  class: starling_ml.modules.control.phase.PhaseManager
+train_metrics:
   class: starling_ml.modules.metrics.segmentation.SegmentationMetrics
   params:
-    num_classes: $ctx:data.num_classes
-    prediction: train.model.logits
-    target: train.batch.mask
+    num_classes: 3
+    prediction: model.output
+    target: batch.target
+    mode: multiclass
     prefix: metrics.train
     phase: train
-    reset_on: validation_start
-    finalize_on: validation_start
-
-ValidationMetrics:
+    reset_on: phase_started
+    finalize_on: phase_ended
+validation_batch:
+  class: starling_ml.modules.data.general.BatchSource
+  params:
+    dataset: $ctx:data.dataset
+    outputs:
+      validation.input: input
+      validation.target: target
+    batch_size: 4
+    cycle: false
+    shuffle: false
+    reset_on:
+    - validation_start
+validation_move_input:
+  class: starling_ml.modules.processing.runtime.MoveToDevice
+  params:
+    input: validation.input
+    device: $const:device
+validation_move_target:
+  class: starling_ml.modules.processing.runtime.MoveToDevice
+  params:
+    input: validation.target
+    device: $const:device
+validation_forward:
+  class: starling_ml.modules.forward.Forward
+  params:
+    model: $ctx:model.instance
+    input: validation.input
+    output: validation.output
+    training: false
+validation_loss:
+  class: starling_ml.modules.losses.overlap.DiceLoss
+  params:
+    prediction: validation.output
+    target: validation.target
+    output: validation.loss
+    mode: multiclass
+    empty_target: false_positive
+metrics:
   class: starling_ml.modules.metrics.segmentation.SegmentationMetrics
   params:
-    num_classes: $ctx:data.num_classes
-    prediction: validation.model.logits
-    target: validation.batch.mask
-    prefix: metrics.validation
-    phase: validation
-    reset_on: validation_start
-    finalize_on: validation_end
-
-Logger:
-  class: starling_ml.modules.monitoring.basic.ConsoleLogger
-  params:
-    every: $const:log_every
-    scalars:
-      loss: train.loss
-      train_dice: metrics.train.dice_mean
-      val_dice: metrics.validation.dice_mean
-
-Progress:
-  class: starling_ml.modules.monitoring.progress.TqdmReporter
-  params:
-    total: $const:max_steps
-    validation_total: $const:validation_steps
-    enabled: $const:use_tqdm
-    train_scalars:
-      loss: train.loss
-    validation_scalars:
-      dice: metrics.validation.dice_mean
+    num_classes: 3
+    prediction: validation.output
+    target: validation.target
+    mode: multiclass

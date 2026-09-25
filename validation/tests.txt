@@ -70,8 +70,14 @@ test_resume_matches_uninterrupted (test_v03_runtime.RuntimeTests.test_resume_mat
 test_stop_prevents_validation_restart (test_v03_runtime.RuntimeTests.test_stop_prevents_validation_restart) ... ok
 test_weight_product_yaml_order (test_v03_runtime.RuntimeTests.test_weight_product_yaml_order) ... ok
 test_yaml_roundtrip (test_v03_runtime.RuntimeTests.test_yaml_roundtrip) ... ok
+test_conflict_requires_explicit_replacement (test_v04_composition.CompositionTests.test_conflict_requires_explicit_replacement) ... ok
+test_phase_module_expands_independent_instances (test_v04_composition.CompositionTests.test_phase_module_expands_independent_instances) ... ok
+test_recipe_and_monitoring_are_composable (test_v04_composition.CompositionTests.test_recipe_and_monitoring_are_composable) ... ok
+test_ready_experiment_writes_text_log (test_v04_composition.PhaseAndMonitoringTests.test_ready_experiment_writes_text_log) ... ok
+test_tqdm_cleanup_is_safe_before_setup (test_v04_composition.PhaseAndMonitoringTests.test_tqdm_cleanup_is_safe_before_setup) ... ok
+test_validation_recipe_has_separate_phase_metrics_and_loss (test_v04_composition.PhaseAndMonitoringTests.test_validation_recipe_has_separate_phase_metrics_and_loss) ... ok
 
 ----------------------------------------------------------------------
-Ran 72 tests in 2.380s
+Ran 78 tests in 2.310s
 
 OK

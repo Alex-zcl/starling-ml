@@ -1,147 +1,196 @@
-DataSpec:
+seed:
+  creates: []
+  reads: []
+  mutates: []
+  updates: []
+dataset:
   creates:
-    - data.num_classes
-    - data.in_channels
-
-Run:
+  - data.dataset
+  reads: []
+  mutates: []
+  updates: []
+batch:
   creates:
-    - run.step
-    - run.phase
-    - run.validation_index
-    - run.validation_due
-    - run.stop
-
-TrainData:
-  creates:
-    - train.batch.image
-    - train.batch.mask
-
-ValidationData:
-  creates:
-    - validation.batch.image
-    - validation.batch.mask
-
-Model:
+  - batch.input
+  - batch.target
   reads:
-    - data.in_channels
-    - data.num_classes
+  - data.dataset
+  mutates: []
+  updates: []
+model:
   creates:
-    - model.instance
-
-TrainForward:
-  reads:
-    - model.instance
-    - train.batch.image
+  - model.raw
+  reads: []
+  mutates: []
+  updates: []
+device:
   creates:
-    - train.model.logits
-
-ValidationForward:
+  - model.instance
   reads:
-    - model.instance
-    - validation.batch.image
+  - model.raw
+  mutates:
+  - model.raw
+  updates: []
+move_input:
+  creates: []
+  reads:
+  - batch.input
+  mutates: []
+  updates:
+  - batch.input
+move_target:
+  creates: []
+  reads:
+  - batch.target
+  mutates: []
+  updates:
+  - batch.target
+forward:
   creates:
-    - validation.model.logits
-
-AdaptiveWeights:
+  - model.output
   reads:
-    - data.num_classes
-    - metrics.validation.precision
-    - metrics.validation.recall
+  - model.instance
+  - batch.input
+  mutates:
+  - model.instance
+  updates: []
+loss:
   creates:
-    - weights.positive
-    - weights.negative
-    - weights.class
-
-DiceWeight:
+  - loss.pointwise
   reads:
-    - run.step
+  - model.output
+  - batch.target
+  mutates: []
+  updates: []
+dice:
   creates:
-    - weights.loss.dice
-
-BCE:
+  - loss.dice
   reads:
-    - train.model.logits
-    - train.batch.mask
-    - weights.positive
-    - weights.negative
+  - model.output
+  - batch.target
+  mutates: []
+  updates: []
+mix:
   creates:
-    - loss.bce
-
-Dice:
+  - train.loss
   reads:
-    - train.model.logits
-    - train.batch.mask
-    - weights.class
+  - loss.pointwise
+  - loss.dice
+  mutates: []
+  updates: []
+optimizer:
   creates:
-    - loss.dice
-
-Loss:
+  - optim.main.optimizer
+  - optim.main.did_step
+  - optim.main.step
+  - optim.main.micro_step
+  - optim.main.grad_norm
+  - optim.main.skipped
   reads:
-    - loss.bce
-    - loss.dice
-    - weights.loss.dice
+  - model.instance
+  - train.loss
+  mutates:
+  - model.instance
+  updates: []
+run:
   creates:
-    - train.loss
-
-Optimization:
-  reads:
-    - model.instance
-    - train.loss
+  - run.step
+  - run.status
+  - run.finish_requested
+  - run.stop
+  reads: []
+  mutates: []
+  updates: []
+phase:
   creates:
-    - optim.main.optimizer
-    - optim.main.did_step
-    - optim.main.step
-    - optim.main.micro_step
-    - optim.main.grad_norm
-    - optim.main.skipped
-
-TrainMetrics:
+  - phase.name
+  - phase.index
+  - phase.step
+  - phase.cycle
+  - phase.due
+  - run.phase
+  - run.validation_index
+  - run.validation_due
   reads:
-    - data.num_classes
-    - train.model.logits
-    - train.batch.mask
+  - run.step
+  - run.finish_requested
+  - run.stop
+  mutates: []
+  updates: []
+train_metrics:
   creates:
-    - metrics.train.precision
-    - metrics.train.precision_mean
-    - metrics.train.recall
-    - metrics.train.recall_mean
-    - metrics.train.f1
-    - metrics.train.f1_mean
-    - metrics.train.dice
-    - metrics.train.dice_mean
-    - metrics.train.iou
-    - metrics.train.iou_mean
-    - metrics.train.accuracy
-    - metrics.train.accuracy_mean
-
-ValidationMetrics:
+  - metrics.train.precision
+  - metrics.train.precision_mean
+  - metrics.train.recall
+  - metrics.train.recall_mean
+  - metrics.train.f1
+  - metrics.train.f1_mean
+  - metrics.train.dice
+  - metrics.train.dice_mean
+  - metrics.train.iou
+  - metrics.train.iou_mean
+  - metrics.train.accuracy
+  - metrics.train.accuracy_mean
   reads:
-    - data.num_classes
-    - validation.model.logits
-    - validation.batch.mask
+  - model.output
+  - batch.target
+  mutates: []
+  updates: []
+validation_batch:
   creates:
-    - metrics.validation.precision
-    - metrics.validation.precision_mean
-    - metrics.validation.recall
-    - metrics.validation.recall_mean
-    - metrics.validation.f1
-    - metrics.validation.f1_mean
-    - metrics.validation.dice
-    - metrics.validation.dice_mean
-    - metrics.validation.iou
-    - metrics.validation.iou_mean
-    - metrics.validation.accuracy
-    - metrics.validation.accuracy_mean
-
-Logger:
+  - validation.input
+  - validation.target
   reads:
-    - run.step
-    - train.loss
-    - metrics.train.dice_mean
-    - metrics.validation.dice_mean
-
-Progress:
+  - data.dataset
+  mutates: []
+  updates: []
+validation_move_input:
+  creates: []
   reads:
-    - run.step
-    - train.loss
-    - metrics.validation.dice_mean
+  - validation.input
+  mutates: []
+  updates:
+  - validation.input
+validation_move_target:
+  creates: []
+  reads:
+  - validation.target
+  mutates: []
+  updates:
+  - validation.target
+validation_forward:
+  creates:
+  - validation.output
+  reads:
+  - model.instance
+  - validation.input
+  mutates:
+  - model.instance
+  updates: []
+validation_loss:
+  creates:
+  - validation.loss
+  reads:
+  - validation.output
+  - validation.target
+  mutates: []
+  updates: []
+metrics:
+  creates:
+  - metrics.validation.precision
+  - metrics.validation.precision_mean
+  - metrics.validation.recall
+  - metrics.validation.recall_mean
+  - metrics.validation.f1
+  - metrics.validation.f1_mean
+  - metrics.validation.dice
+  - metrics.validation.dice_mean
+  - metrics.validation.iou
+  - metrics.validation.iou_mean
+  - metrics.validation.accuracy
+  - metrics.validation.accuracy_mean
+  reads:
+  - validation.output
+  - validation.target
+  mutates: []
+  updates: []

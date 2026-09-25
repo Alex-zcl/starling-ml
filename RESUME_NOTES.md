@@ -1,4 +1,4 @@
-# Состояние для возобновления — 0.3.0
+# Состояние для возобновления — 0.4.0
 
 Дата фиксации: 23 сентября 2026. Это документ состояния **сохранённых файлов**.
 При возобновлении в workspace нашлись частичные 0.3 исходники и старые документы,
@@ -7,6 +7,10 @@
 
 ## Готово
 
+- ConfigFragment/compose, phase_module и готовые monitoring-профили.
+- Раздельные RunManager/PhaseManager с совместимыми legacy keys/signals.
+- Независимые train/validation segmentation metrics и validation objective.
+- RunDirectoryManager, text log, phase-aware console/tqdm/TensorBoard/ClearML.
 - Public Engine(config), load/save YAML, get_config, analyze_config, CLI.
 - Dataset counts, шесть ролей весов, explicit masks/costs/importance.
 - BCE/focal/CE, overlap reducers, Generalized Dice, Mixer sufficient stats.

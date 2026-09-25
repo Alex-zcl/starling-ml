@@ -1,18 +1,21 @@
-> Применяется к общему step-driven pipeline. В 0.3.0 добавлены full-state resume, cleanup и guards после stop; актуальные ограничения описаны в README.md и RESUME_NOTES.md.
+> Применяется к общему step-driven pipeline. В 0.4.0 RunManager отвечает за global step/stop, а PhaseManager — за фазовые переходы; актуальные ограничения описаны в README.md и RESUME_NOTES.md.
 
 # Step-driven lifecycle
 
 ## Состояние запуска
 
-`RunManager` создаёт:
+`RunManager` создаёт global state:
 
 ```text
 run.step
-run.phase
-run.validation_index
-run.validation_due
+run.status
+run.finish_requested
 run.stop
 ```
+
+`PhaseManager` создаёт `phase.name`, `phase.index`, `phase.step`, `phase.cycle` и
+`phase.due`. Ключи `run.phase`, `run.validation_index`, `run.validation_due`
+публикуются как compatibility view для конфигов 0.3.
 
 `run.step` увеличивается только после сигнала:
 
@@ -27,14 +30,19 @@ Pipeline, а не optimizer и не Engine, определяет момент з
 ```text
 run_started
 step_completed          внутренний запрос RunManager
-train_step_end          публичное событие после увеличения run.step
-validation_start
-validation_completed    внутренний запрос RunManager
-validation_end
-train_resume
+run_step_end            публичное phase-neutral событие после увеличения run.step
+phase_started
+phase_step_end
+phase_completed         внутренний запрос PhaseManager
+phase_ended
+phases_completed        подтверждение RunManager, что финальные фазы завершены
 stop_requested
+run_finish_requested
 run_end
 ```
+
+События `train_step_end`, `validation_start/end` и `train_resume` временно
+сохраняются для совместимости существующих reporters.
 
 ## Базовый pipeline
 
@@ -57,7 +65,7 @@ run_end
             - signal: step_completed
 
       - when:
-          condition: $ctx:run.validation_due
+          condition: $ctx:phase.due
           equals: true
           body:
             - loop:
@@ -66,8 +74,12 @@ run_end
                   - call: ValidationData
                   - call: ValidationForward
                   - call: ValidationMetrics
-                  - signal: validation_step_end
-            - signal: validation_completed
+                  - signal:
+                      name: phase_batch_completed
+                      payload: {phase: validation}
+            - signal:
+                name: phase_completed
+                payload: {phase: validation}
 ```
 
 ## Gradient accumulation
@@ -104,14 +116,14 @@ Validation, schedule и checkpoint могут использовать `run.step
 
 ## Порядок метрик
 
-На `validation_start`:
+На `phase_ended(phase=train)`:
 
 ```text
 TrainMetrics -> publish -> metrics_ready(phase=train) -> reset
 ValidationMetrics -> reset
 ```
 
-На `validation_end`:
+На `phase_ended(phase=validation)`:
 
 ```text
 ValidationMetrics -> publish -> metrics_ready(phase=validation) -> reset

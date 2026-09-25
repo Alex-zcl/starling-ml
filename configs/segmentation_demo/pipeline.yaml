@@ -1,34 +1,57 @@
 - signal: run_started
-
+- when:
+    condition: $ctx:phase.due
+    body:
+    - iterate:
+        source: validation_batch
+        body:
+        - call: validation_move_input
+        - call: validation_move_target
+        - call: validation_forward
+        - call: validation_loss
+        - call: metrics
+        - signal:
+            name: phase_batch_completed
+            payload:
+              phase: validation
+    - signal:
+        name: phase_completed
+        payload:
+          phase: validation
 - while:
     condition: $ctx:run.stop
     equals: false
+    max_iterations: 100000
     body:
-      - call: TrainData
-      - call: TrainForward
-      - call: BCE
-      - call: Dice
-      - call: Loss
-      - call: TrainMetrics
-      - call: Optimization
-
-      # Global step завершается только после реального optimizer.step().
-      - when:
-          condition: $ctx:optim.main.did_step
-          equals: true
-          body:
-            - signal: step_completed
-
-      # RunManager сам выставляет validation_due через каждые N global steps.
-      - when:
-          condition: $ctx:run.validation_due
-          equals: true
-          body:
-            - loop:
-                count: $const:validation_steps
-                body:
-                  - call: ValidationData
-                  - call: ValidationForward
-                  - call: ValidationMetrics
-                  - signal: validation_step_end
-            - signal: validation_completed
+    - call: batch
+    - call: move_input
+    - call: move_target
+    - call: forward
+    - call: loss
+    - call: dice
+    - call: mix
+    - call: train_metrics
+    - call: optimizer
+    - when:
+        condition: $ctx:optim.main.did_step
+        body:
+        - signal: step_completed
+    - when:
+        condition: $ctx:phase.due
+        body:
+        - iterate:
+            source: validation_batch
+            body:
+            - call: validation_move_input
+            - call: validation_move_target
+            - call: validation_forward
+            - call: validation_loss
+            - call: metrics
+            - signal:
+                name: phase_batch_completed
+                payload:
+                  phase: validation
+        - signal:
+            name: phase_completed
+            payload:
+              phase: validation

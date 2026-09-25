@@ -62,9 +62,10 @@ class SegmentationMetrics(Module):
     def reaction(self, signal, source=None, **payload):
         # Сначала публикуем старое окно, затем reset. Это важно, когда один сигнал
         # одновременно означает конец train-окна и начало validation.
-        if signal == self.finalize_on or (signal == "run_end" and self.phase == "train"):
+        phase_matches = payload.get("phase") in {None, self.phase}
+        if (signal == self.finalize_on and phase_matches) or (signal == "run_end" and self.phase == "train"):
             self._publish()
-        elif signal == self.reset_on:
+        elif signal == self.reset_on and phase_matches:
             self.reset()
 
     def _publish(self):

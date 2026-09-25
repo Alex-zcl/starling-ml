@@ -31,14 +31,23 @@ def special_config(task, **options):
         return config
     if task == 'segmentation_validation':
         config = get_config('segmentation', **options)
-        config['modules']['run']['params'].update(validate_every=2,validate_at_start=True,validate_at_end=True)
+        config['modules']['phase']['params'].update(validate_every=2,validate_at_start=True,validate_at_end=True)
+        train_metric_keys=[f'metrics.train.{key}{suffix}' for key in ('precision','recall','f1','dice','iou','accuracy') for suffix in ('','_mean')]
+        add(config,'train_metrics','starling_ml.modules.metrics.segmentation.SegmentationMetrics',dict(num_classes=3,prediction='model.output',target='batch.target',mode='multiclass',prefix='metrics.train',phase='train',reset_on='phase_started',finalize_on='phase_ended'),reads=['model.output','batch.target'],creates=train_metric_keys)
+        train_body=config['pipeline'][-1]['while']['body']
+        train_body.insert(next(i for i,step in enumerate(train_body) if step.get('call') == 'optimizer'),dict(call='train_metrics'))
         add(config,'validation_batch','starling_ml.modules.data.general.BatchSource',dict(dataset='$ctx:data.dataset',outputs={'validation.input':'input','validation.target':'target'},batch_size=4,cycle=False,shuffle=False,reset_on=['validation_start']),reads=['data.dataset'],creates=['validation.input','validation.target'])
         for key in ('input','target'):
             add(config,'validation_move_'+key,'starling_ml.modules.processing.runtime.MoveToDevice',dict(input='validation.'+key,device='$const:device'),reads=['validation.'+key],updates=['validation.'+key])
         add(config,'validation_forward','starling_ml.modules.forward.Forward',dict(model='$ctx:model.instance',input='validation.input',output='validation.output',training=False),reads=['model.instance','validation.input'],mutates=['model.instance'],creates=['validation.output'])
+        # Validation objective намеренно отдельный: пользователь может заменить
+        # его независимо от train CE+Dice mixer.
+        add(config,'validation_loss','starling_ml.modules.losses.overlap.DiceLoss',dict(prediction='validation.output',target='validation.target',output='validation.loss',mode='multiclass',empty_target='false_positive'),reads=['validation.output','validation.target'],creates=['validation.loss'])
         metric_keys=[f'metrics.validation.{key}{suffix}' for key in ('precision','recall','f1','dice','iou','accuracy') for suffix in ('','_mean')]
         add(config,'metrics','starling_ml.modules.metrics.segmentation.SegmentationMetrics',dict(num_classes=3,prediction='validation.output',target='validation.target',mode='multiclass'),reads=['validation.output','validation.target'],creates=metric_keys)
-        validate={'when':dict(condition='$ctx:run.validation_due',body=[{'iterate':dict(source='validation_batch',body=[dict(call=n) for n in ('validation_move_input','validation_move_target','validation_forward','metrics')])},dict(signal='validation_completed')])}
+        validation_body = [dict(call=n) for n in ('validation_move_input','validation_move_target','validation_forward','validation_loss','metrics')]
+        validation_body.append({'signal': {'name': 'phase_batch_completed', 'payload': {'phase': 'validation'}}})
+        validate={'when':dict(condition='$ctx:phase.due',body=[{'iterate':dict(source='validation_batch',body=validation_body)}, {'signal': {'name': 'phase_completed', 'payload': {'phase': 'validation'}}}])}
         config['pipeline'].insert(1,deepcopy(validate))
         config['pipeline'][-1]['while']['body'].append(validate)
         return config

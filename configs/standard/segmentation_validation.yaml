@@ -85,10 +85,25 @@ modules:
   run:
     params:
       max_steps: $const:max_steps
+      defer_finish: true
+    class: starling_ml.modules.control.run.RunManager
+  phase:
+    params:
       validate_at_end: true
       validate_every: 2
       validate_at_start: true
-    class: starling_ml.modules.control.run.RunManager
+    class: starling_ml.modules.control.phase.PhaseManager
+  train_metrics:
+    class: starling_ml.modules.metrics.segmentation.SegmentationMetrics
+    params:
+      num_classes: 3
+      prediction: model.output
+      target: batch.target
+      mode: multiclass
+      prefix: metrics.train
+      phase: train
+      reset_on: phase_started
+      finalize_on: phase_ended
   validation_batch:
     class: starling_ml.modules.data.general.BatchSource
     params:
@@ -118,6 +133,14 @@ modules:
       input: validation.input
       output: validation.output
       training: false
+  validation_loss:
+    class: starling_ml.modules.losses.overlap.DiceLoss
+    params:
+      prediction: validation.output
+      target: validation.target
+      output: validation.loss
+      mode: multiclass
+      empty_target: false_positive
   metrics:
     class: starling_ml.modules.metrics.segmentation.SegmentationMetrics
     params:
@@ -223,11 +246,45 @@ contracts:
   run:
     creates:
     - run.step
+    - run.status
+    - run.finish_requested
+    - run.stop
+    reads: []
+    mutates: []
+    updates: []
+  phase:
+    creates:
+    - phase.name
+    - phase.index
+    - phase.step
+    - phase.cycle
+    - phase.due
     - run.phase
     - run.validation_index
     - run.validation_due
+    reads:
+    - run.step
+    - run.finish_requested
     - run.stop
-    reads: []
+    mutates: []
+    updates: []
+  train_metrics:
+    creates:
+    - metrics.train.precision
+    - metrics.train.precision_mean
+    - metrics.train.recall
+    - metrics.train.recall_mean
+    - metrics.train.f1
+    - metrics.train.f1_mean
+    - metrics.train.dice
+    - metrics.train.dice_mean
+    - metrics.train.iou
+    - metrics.train.iou_mean
+    - metrics.train.accuracy
+    - metrics.train.accuracy_mean
+    reads:
+    - model.output
+    - batch.target
     mutates: []
     updates: []
   validation_batch:
@@ -261,6 +318,14 @@ contracts:
     mutates:
     - model.instance
     updates: []
+  validation_loss:
+    creates:
+    - validation.loss
+    reads:
+    - validation.output
+    - validation.target
+    mutates: []
+    updates: []
   metrics:
     creates:
     - metrics.validation.precision
@@ -283,7 +348,7 @@ contracts:
 pipeline:
 - signal: run_started
 - when:
-    condition: $ctx:run.validation_due
+    condition: $ctx:phase.due
     body:
     - iterate:
         source: validation_batch
@@ -291,8 +356,16 @@ pipeline:
         - call: validation_move_input
         - call: validation_move_target
         - call: validation_forward
+        - call: validation_loss
         - call: metrics
-    - signal: validation_completed
+        - signal:
+            name: phase_batch_completed
+            payload:
+              phase: validation
+    - signal:
+        name: phase_completed
+        payload:
+          phase: validation
 - while:
     condition: $ctx:run.stop
     equals: false
@@ -305,13 +378,14 @@ pipeline:
     - call: loss
     - call: dice
     - call: mix
+    - call: train_metrics
     - call: optimizer
     - when:
         condition: $ctx:optim.main.did_step
         body:
         - signal: step_completed
     - when:
-        condition: $ctx:run.validation_due
+        condition: $ctx:phase.due
         body:
         - iterate:
             source: validation_batch
@@ -319,5 +393,13 @@ pipeline:
             - call: validation_move_input
             - call: validation_move_target
             - call: validation_forward
+            - call: validation_loss
             - call: metrics
-        - signal: validation_completed
+            - signal:
+                name: phase_batch_completed
+                payload:
+                  phase: validation
+        - signal:
+            name: phase_completed
+            payload:
+              phase: validation

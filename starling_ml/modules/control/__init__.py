@@ -1,6 +1,7 @@
 """Управление запуском и динамическими параметрами эксперимента."""
 
 from .run import RunManager
+from .phase import PhaseManager
 from .weights import (
     ConstantWeight,
     FrequencyWeights,
@@ -16,6 +17,7 @@ __all__ = [
     "LinearWeightSchedule",
     "MetricAdaptiveWeights",
     "PresenceWeights",
+    "PhaseManager",
     "RunManager",
     "WeightProduct",
 ]

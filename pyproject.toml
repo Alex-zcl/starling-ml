@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "starling-ml"
-version = "0.3.0"
+version = "0.4.0"
 description = "Readable shared-context orchestration for modular ML experiments"
 readme = "README.md"
 license = "MIT"
@@ -38,7 +38,9 @@ classifiers = [
 [project.optional-dependencies]
 detection = ["scipy"]
 progress = ["tqdm"]
-tracking = ["tensorboard", "clearml"]
+tensorboard = ["tensorboard"]
+clearml = ["clearml"]
+tracking = ["tqdm", "tensorboard"]
 smp = ["segmentation-models-pytorch"]
 transformers = ["transformers"]
 diffusers = ["diffusers"]

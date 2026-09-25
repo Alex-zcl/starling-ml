@@ -85,8 +85,12 @@ modules:
   run:
     params:
       max_steps: $const:max_steps
-      validate_at_end: false
+      defer_finish: true
     class: starling_ml.modules.control.run.RunManager
+  phase:
+    params:
+      validate_at_end: false
+    class: starling_ml.modules.control.phase.PhaseManager
 contracts:
   seed:
     creates: []
@@ -185,11 +189,26 @@ contracts:
   run:
     creates:
     - run.step
+    - run.status
+    - run.finish_requested
+    - run.stop
+    reads: []
+    mutates: []
+    updates: []
+  phase:
+    creates:
+    - phase.name
+    - phase.index
+    - phase.step
+    - phase.cycle
+    - phase.due
     - run.phase
     - run.validation_index
     - run.validation_due
+    reads:
+    - run.step
+    - run.finish_requested
     - run.stop
-    reads: []
     mutates: []
     updates: []
 pipeline:
